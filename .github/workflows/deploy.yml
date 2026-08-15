@@ -35,7 +35,24 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Verify Supabase credentials are configured
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY. Set them under Settings -> Secrets and variables -> Actions (Secrets or Variables)."
+            exit 1
+          fi
+
       - name: Build
+        env:
+          # Vite bakes VITE_-prefixed vars into the static bundle at build
+          # time (there's no server to read them at runtime on GitHub
+          # Pages). Reads from either Secrets or Variables, whichever this
+          # repo has them set as.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
         run: npm run build
 
       - name: Upload build artifact

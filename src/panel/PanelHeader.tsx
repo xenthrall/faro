@@ -1,4 +1,5 @@
-import { Menu } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
+import { useAuth } from '@/auth'
 import { ThemeToggle } from '../theme'
 import { usePanel } from './panel-context'
 
@@ -8,6 +9,7 @@ export type PanelHeaderProps = {
 
 export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
   const panel = usePanel()
+  const auth = useAuth()
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b border-gray-200/80 bg-white/80 px-3 backdrop-blur-md sm:px-6 dark:border-gray-800/80 dark:bg-gray-950/80">
@@ -23,6 +25,17 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
       <span className="flex-1 truncate px-1 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
         {panel.name}
       </span>
+
+      {panel.requiresAuth && auth.status === 'authenticated' ? (
+        <button
+          type="button"
+          onClick={() => void auth.signOut()}
+          aria-label="Cerrar sesión"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white dark:active:bg-gray-700"
+        >
+          <LogOut className="h-[18px] w-[18px]" />
+        </button>
+      ) : null}
 
       <ThemeToggle />
     </header>

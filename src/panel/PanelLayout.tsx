@@ -1,8 +1,18 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router'
+import { Navigate, useLocation } from 'react-router'
+import { useAuth } from '@/auth'
 import { PanelContent } from './PanelContent'
 import { PanelHeader } from './PanelHeader'
+import { usePanel } from './panel-context'
 import { PanelSidebar } from './PanelSidebar'
+
+function PanelAuthLoading() {
+  return (
+    <div className="flex min-h-dvh items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-700 dark:border-t-white" />
+    </div>
+  )
+}
 
 /**
  * Standard admin shell: header on top, sidebar + page content below.
@@ -10,9 +20,13 @@ import { PanelSidebar } from './PanelSidebar'
  * this once and renders the active page through `<Outlet />`.
  *
  * Owns the mobile drawer's open/closed state since `PanelHeader` (trigger)
- * and `PanelSidebar` (drawer) are siblings that both need it.
+ * and `PanelSidebar` (drawer) are siblings that both need it. Also guards
+ * every page behind auth when the panel requires it, since they're all
+ * mounted as children of this layout's route.
  */
 export function PanelLayout() {
+  const panel = usePanel()
+  const auth = useAuth()
   const location = useLocation()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [lastPathname, setLastPathname] = useState(location.pathname)
@@ -36,6 +50,11 @@ export function PanelLayout() {
       window.removeEventListener('keydown', onKeyDown)
     }
   }, [mobileNavOpen])
+
+  if (panel.requiresAuth && auth.status !== 'authenticated') {
+    if (auth.status === 'loading') return <PanelAuthLoading />
+    return <Navigate to={`${panel.path}/login`} replace />
+  }
 
   return (
     <div className="flex min-h-dvh flex-col bg-gray-50 dark:bg-gray-950">

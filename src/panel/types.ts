@@ -66,6 +66,12 @@ export type PanelConfig = {
    * from the pages directory.
    */
   notFoundComponent?: ComponentType
+  /**
+   * When `true`, every page in this panel requires an authenticated Supabase
+   * session. Unauthenticated visitors are redirected to a login page
+   * generated at `${path}/login`. Defaults to `false`.
+   */
+  requiresAuth?: boolean
 }
 
 /**

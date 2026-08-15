@@ -10,5 +10,6 @@ export const appPanel = createPanel({
   id: 'app',
   path: '/app',
   name: 'Faro',
+  requiresAuth: true,
   pages,
 })

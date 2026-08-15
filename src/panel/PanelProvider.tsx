@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import { PanelContext } from './panel-context'
 import { PanelLayout } from './PanelLayout'
+import { PanelLogin } from './PanelLogin'
 import { PanelNotFound } from './PanelNotFound'
 import { PanelPage } from './PanelPage'
 import { relativePagePath } from './paths'
@@ -21,6 +22,9 @@ export function PanelProvider({ panel }: PanelProviderProps) {
   return (
     <PanelContext.Provider value={panel}>
       <Routes>
+        {panel.requiresAuth ? (
+          <Route path={`${panel.path}/login`} element={<PanelLogin />} />
+        ) : null}
         <Route path={panel.path} element={<PanelLayout />}>
           {panel.pages.map((page) => (
             <Route

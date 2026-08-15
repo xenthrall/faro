@@ -91,6 +91,17 @@ Faro se encuentra actualmente en **etapa inicial de diseño y desarrollo**.
 
 La arquitectura y el stack pueden evolucionar durante el desarrollo a medida que aparezcan nuevas necesidades técnicas.
 
+## Configuración
+
+Copiá `.env.example` a `.env.local` y completá las credenciales del proyecto de Supabase (Project Settings → API):
+
+```bash
+cp .env.example .env.local
+```
+
+* `VITE_SUPABASE_URL`
+* `VITE_SUPABASE_PUBLISHABLE_KEY`
+
 ## Scripts
 
 ```bash

@@ -1,4 +1,5 @@
 export { createPanel } from './create-panel'
+export { PanelLogin } from './PanelLogin'
 export { PanelNotFound } from './PanelNotFound'
 export { PanelProvider } from './PanelProvider'
 export type { PanelProviderProps } from './PanelProvider'

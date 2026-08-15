@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, useLocation } from 'react-router'
+import { AuthProvider } from '@/auth'
 import { appPanel } from '@/panels/app'
 import { PanelProvider } from '@/panel'
 import { ThemeProvider } from '@/theme'
@@ -22,9 +23,11 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <AppRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   )
 }
