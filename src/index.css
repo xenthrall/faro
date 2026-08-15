@@ -50,3 +50,15 @@
     transform: scale(1) rotate(0deg);
   }
 }
+
+/* "Subí al Faro" (src/panels/public/pages/subir-al-faro.tsx): gulls drifting
+   across the balcony floor. `left` (not `transform`) so it's a percentage of
+   the bird's own container, staying correct at any width. */
+@keyframes fly-across {
+  from {
+    left: -8%;
+  }
+  to {
+    left: 108%;
+  }
+}
