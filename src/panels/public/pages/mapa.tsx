@@ -6,7 +6,7 @@ import { Footer } from '../components/Footer'
 export const meta: PanelPageMeta = {
   label: 'El Mapa',
   icon: MapPin,
-  order: 15,
+  order: 20,
 }
 
 type Spot = { id: string; top: string; left: string; message: string }

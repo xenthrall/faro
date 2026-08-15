@@ -1,4 +1,5 @@
 import { LogOut, Menu } from 'lucide-react'
+import { Link } from 'react-router'
 import { useAuth } from '@/auth'
 import { ThemeToggle } from '../theme'
 import { usePanel } from './panel-context'
@@ -25,7 +26,11 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      <div className="flex flex-1 items-center px-1">
+      <Link
+        to={panel.path}
+        aria-label={`Ir al inicio de ${panel.name}`}
+        className="flex flex-1 items-center overflow-hidden px-1 outline-none focus-visible:ring-2 focus-visible:ring-gray-900 dark:focus-visible:ring-white"
+      >
         {Logo ? (
           <Logo className="h-6" />
         ) : (
@@ -33,7 +38,7 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
             {panel.name}
           </span>
         )}
-      </div>
+      </Link>
 
       {showAuthenticatedControls && panel.userMenu ? <PanelUserMenu /> : null}
 

@@ -6,7 +6,7 @@ import { Footer } from '../components/Footer'
 export const meta: PanelPageMeta = {
   label: 'El Oráculo',
   icon: Eye,
-  order: 30,
+  order: 15,
 }
 
 type AnswerMood = 'positive' | 'negative' | 'neutral'
