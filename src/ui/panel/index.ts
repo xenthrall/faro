@@ -1,3 +1,5 @@
+export { buildNavigation } from './navigation'
+export type { NavigationGroup } from './navigation'
 export { createPanel } from './create-panel'
 export { createResource } from './create-resource'
 export { PanelAccount } from './PanelAccount'

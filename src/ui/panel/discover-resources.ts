@@ -31,6 +31,7 @@ export function resolveResourcePages(resource: Resource): PanelPageConfig[] {
       icon: isIndex ? (resource.icon ?? page.icon) : page.icon,
       order: isIndex ? (resource.order ?? page.order) : page.order,
       hidden: isIndex ? page.hidden : true,
+      group: isIndex ? (resource.group ?? page.group) : page.group,
     }
   })
 }

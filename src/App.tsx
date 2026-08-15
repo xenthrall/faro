@@ -5,6 +5,7 @@ import { publicPanel } from '@/panels/public'
 import { PanelProvider } from '@/ui/panel'
 import type { Panel } from '@/ui/panel'
 import { ThemeProvider } from '@/ui/theme'
+import { ToastProvider } from '@/ui/toast'
 
 const panels: Panel[] = [publicPanel, appPanel]
 
@@ -33,11 +34,13 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </ToastProvider>
     </ThemeProvider>
   )
 }

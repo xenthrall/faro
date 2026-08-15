@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router'
+import { buildNavigation } from './navigation'
 import { usePanel } from './panel-context'
 import { resolvePagePath } from './paths'
 
@@ -37,30 +38,42 @@ export function PanelSidebar({ open, onClose }: PanelSidebarProps) {
         </div>
 
         <nav className="scrollbar-none flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-          {panel.pages
-            .filter((page) => !page.hidden)
-            .map((page) => {
-              const Icon = page.icon
-
-              return (
-                <NavLink
-                  key={page.name}
-                  to={resolvePagePath(panel, page)}
-                  end={page.path === '/'}
-                  className={({ isActive }) =>
-                    [
-                      'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors sm:py-2',
-                      isActive
-                        ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
-                    ].join(' ')
-                  }
+          {buildNavigation(panel.pages).map((group, index) => (
+            <div key={group.label ?? '__ungrouped'} className="flex flex-col gap-1">
+              {group.label ? (
+                <h2
+                  className={`px-3 pb-1 text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500 ${
+                    index === 0 ? 'pt-1' : 'pt-4'
+                  }`}
                 >
-                  {Icon ? <Icon className="h-[18px] w-[18px] shrink-0" /> : null}
-                  <span className="truncate">{page.label}</span>
-                </NavLink>
-              )
-            })}
+                  {group.label}
+                </h2>
+              ) : null}
+
+              {group.pages.map((page) => {
+                const Icon = page.icon
+
+                return (
+                  <NavLink
+                    key={page.name}
+                    to={resolvePagePath(panel, page)}
+                    end={page.path === '/'}
+                    className={({ isActive }) =>
+                      [
+                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors sm:py-2',
+                        isActive
+                          ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
+                      ].join(' ')
+                    }
+                  >
+                    {Icon ? <Icon className="h-[18px] w-[18px] shrink-0" /> : null}
+                    <span className="truncate">{page.label}</span>
+                  </NavLink>
+                )
+              })}
+            </div>
+          ))}
         </nav>
       </aside>
     </>

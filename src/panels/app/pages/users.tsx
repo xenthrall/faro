@@ -4,7 +4,8 @@ import type { PanelPageMeta } from '@/ui/panel'
 export const meta: PanelPageMeta = {
   label: 'Usuarios',
   icon: Users,
-  order: 10,
+  group: 'Sistema',
+  order: 50,
 }
 
 export default function UsersPage() {

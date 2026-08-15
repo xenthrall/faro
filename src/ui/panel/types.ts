@@ -18,6 +18,13 @@ export type PanelPageMeta = {
   order?: number
   /** Excludes the page from the sidebar while keeping its route. Defaults to `false`. */
   hidden?: boolean
+  /**
+   * Sidebar section this page belongs to, e.g. `'Catálogo'`. Pages sharing a
+   * group are listed under one heading, in `order`; groups themselves are
+   * ordered by the lowest `order` among their pages. Ungrouped pages sit at
+   * the top, above every heading.
+   */
+  group?: string
 }
 
 /** Shape a page file is expected to export when discovered from a directory. */
@@ -45,6 +52,8 @@ export type PanelPageConfig = {
   order?: number
   /** Excludes the page from the sidebar while keeping its route. Defaults to `false`. */
   hidden?: boolean
+  /** Sidebar section this page is listed under. */
+  group?: string
 }
 
 /**
@@ -60,6 +69,8 @@ export type ResourceConfig = {
   icon?: LucideIcon
   /** Lower numbers sort first in the sidebar, alongside regular pages. Defaults to `0`. */
   order?: number
+  /** Sidebar section the resource's entry is listed under, e.g. `'Catálogo'`. */
+  group?: string
   /**
    * Either a manually assembled list of pages, or the result of
    * `import.meta.glob('./pages/*.tsx', { eager: true })` pointed at the

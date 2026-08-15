@@ -48,6 +48,8 @@ export function discoverPages(modules: Record<string, PanelPageModule>): Discove
       component: mod.default,
       icon: meta.icon,
       order: meta.order ?? 0,
+      hidden: meta.hidden ?? false,
+      group: meta.group,
     })
   }
 

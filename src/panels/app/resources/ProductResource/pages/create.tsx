@@ -1,6 +1,7 @@
-import { Link } from 'react-router'
+import { PageHeader } from '@/ui/components'
 import { usePanel } from '@/ui/panel'
 import type { PanelPageMeta } from '@/ui/panel'
+import { ProductForm } from '../components/ProductForm'
 
 export const meta: PanelPageMeta = {
   label: 'Nuevo producto',
@@ -9,22 +10,16 @@ export const meta: PanelPageMeta = {
 
 export default function CreateProductPage() {
   const panel = usePanel()
+  const list = `${panel.path}/products`
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Nuevo producto</h1>
-
-      <div className="mt-6 flex flex-col items-center gap-4 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Aquí vivirá el formulario de creación en una futura iteración.
-        </p>
-        <Link
-          to={`${panel.path}/products`}
-          className="text-sm font-medium text-gray-700 underline-offset-4 hover:underline dark:text-gray-300"
-        >
-          Volver a productos
-        </Link>
-      </div>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title="Nuevo producto"
+        backTo={{ to: list, label: 'Productos' }}
+        description="Definís qué es el producto. Las existencias entran después, con una compra o un ajuste."
+      />
+      <ProductForm returnTo={list} />
     </div>
   )
 }
