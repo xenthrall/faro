@@ -9,6 +9,7 @@ export type PanelSidebarProps = {
 
 export function PanelSidebar({ open, onClose }: PanelSidebarProps) {
   const panel = usePanel()
+  const Logo = panel.logo
 
   return (
     <>
@@ -26,9 +27,13 @@ export function PanelSidebar({ open, onClose }: PanelSidebarProps) {
         }`}
       >
         <div className="flex h-14 shrink-0 items-center border-b border-gray-200 px-5 sm:hidden dark:border-gray-800">
-          <span className="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
-            {panel.name}
-          </span>
+          {Logo ? (
+            <Logo className="h-6" />
+          ) : (
+            <span className="text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+              {panel.name}
+            </span>
+          )}
         </div>
 
         <nav className="scrollbar-none flex flex-1 flex-col gap-1 overflow-y-auto p-3">

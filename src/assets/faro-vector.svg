@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 490 505"
-     width="490"
-     height="505"
+     viewBox="67 21 360 360"
+     width="360"
+     height="360"
      role="img"
      class="faro-logo"
      aria-labelledby="faro-title faro-desc">
 
   <!-- ============================================================
-       FARO — LOGOTIPO VECTORIAL
-       Estructura pensada para animación futura.
+       FARO — ILUSTRACIÓN VECTORIAL
+       Estructura pensada para animación.
 
        Grupos principales:
        #logo-scene      -> ilustración circular
@@ -19,16 +19,18 @@
        #island          -> rocas / isla
        #lighthouse      -> faro completo
        #water           -> mar / olas
-       #wordmark        -> palabra FARO
-       #accent          -> punto dorado de la A
 
-       El fondo del SVG es TRANSPARENTE.
+       El borde de la escena no es una línea: es un degradado radial
+       que desvanece la ilustración hacia afuera (#scene-fade), para
+       que se integre en cualquier fondo sin un contorno duro.
+
+       El fondo del SVG es TRANSPARENTE. El wordmark "FARO" vive
+       aparte, en faro-word.svg.
        ============================================================ -->
 
   <title id="faro-title">Faro</title>
   <desc id="faro-desc">
-    Logotipo vectorial de un faro iluminando sobre el mar,
-    acompañado por la palabra FARO.
+    Ilustración vectorial animada de un faro iluminando sobre el mar.
   </desc>
 
   <!-- ============================================================
@@ -93,47 +95,44 @@
       <feGaussianBlur stdDeviation="5"/>
     </filter>
 
+    <!-- Desvanecido suave del borde de la escena: opaca en el centro,
+         se apaga antes de llegar al límite del círculo. Reemplaza el
+         contorno duro por un borde que se integra con lo que haya
+         detrás. -->
+    <radialGradient id="scene-fade-gradient"
+                    cx="50%"
+                    cy="50%"
+                    r="50%">
+      <stop offset="0%"  stop-color="#fff" stop-opacity="1"/>
+      <stop offset="75%" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="80%" stop-color="#fff" stop-opacity="1"/>
+       <stop offset="85%" stop-color="#fff" stop-opacity="1"/>
+        <stop offset="90%" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="95%" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+
+    <mask id="scene-fade-mask"
+          maskUnits="userSpaceOnUse"
+          x="82"
+          y="36"
+          width="330"
+          height="330">
+      <circle cx="247" cy="201" r="165" fill="url(#scene-fade-gradient)"/>
+    </mask>
+
   </defs>
 
 
   <!-- ============================================================
        ESTILO
-       Variables de color para tema claro/oscuro (con fallback a
-       prefers-color-scheme para cuando el SVG se ve suelto, fuera
-       de la app) y las animaciones del faro. Todo queda scopeado
-       bajo .faro-logo para no filtrarse a otros SVG de la página.
+       Animaciones del faro. Todo queda scopeado bajo .faro-logo
+       para no filtrarse a otros SVG de la página.
        ============================================================ -->
   <style>
-    :root {
-      --faro-word-color: #071a2d;
-      --faro-border-color: #0b1e31;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --faro-word-color: #f5f5f4;
-        --faro-border-color: rgba(255, 255, 255, .85);
-      }
-    }
-
-    /* El toggle de tema explícito de la app gana sobre la preferencia del SO. */
-    .dark {
-      --faro-word-color: #f5f5f4;
-      --faro-border-color: rgba(255, 255, 255, .85);
-    }
-
     .faro-logo {
       display: block;
       width: 100%;
       height: auto;
-    }
-
-    .faro-logo #wordmark {
-      fill: var(--faro-word-color);
-    }
-
-    .faro-logo #scene-border-circle {
-      stroke: var(--faro-border-color);
     }
 
     .faro-logo #light-beam {
@@ -207,7 +206,8 @@
        ============================================================ -->
   <g id="logo-scene"
      data-part="scene"
-     clip-path="url(#scene-clip)">
+     clip-path="url(#scene-clip)"
+     mask="url(#scene-fade-mask)">
 
 
     <!-- ==========================================================
@@ -656,70 +656,6 @@
             fill="#06182d"/>
 
     </g>
-
-  </g>
-
-
-  <!-- ============================================================
-       BORDE DE LA ILUSTRACIÓN
-       El círculo permanece separado del contenido para animarlo
-       o cambiar su stroke independientemente.
-       ============================================================ -->
-  <g id="scene-border"
-     data-part="scene-border">
-
-    <circle id="scene-border-circle"
-            cx="247"
-            cy="201"
-            r="165"
-            fill="none"
-            stroke-width="1"/>
-
-  </g>
-
-
-  <!-- ============================================================
-       WORDMARK — FARO
-       Separado de la ilustración para poder animar texto / letras.
-       ============================================================ -->
-  <g id="wordmark"
-     data-part="wordmark"
-     font-family="Montserrat, Poppins, Arial, sans-serif"
-     font-size="119"
-     font-weight="500"
-     letter-spacing="2">
-
-    <text id="letter-f"
-          x="19"
-          y="490">F</text>
-
-    <text id="letter-a"
-          x="120"
-          y="490">A</text>
-
-    <text id="letter-r"
-          x="238"
-          y="490">R</text>
-
-    <text id="letter-o"
-          x="352"
-          y="490">O</text>
-
-  </g>
-
-
-  <!-- ============================================================
-       ACENTO DORADO
-       Separado para poder animar el punto de la A.
-       ============================================================ -->
-  <g id="accent"
-     data-part="accent">
-
-    <circle id="accent-dot"
-            cx="162"
-            cy="470"
-            r="10"
-            fill="#f6bd55"/>
 
   </g>
 

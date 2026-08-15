@@ -12,6 +12,7 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
   const panel = usePanel()
   const auth = useAuth()
   const showAuthenticatedControls = panel.requiresAuth && auth.status === 'authenticated'
+  const Logo = panel.logo
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b border-gray-200/80 bg-white/80 px-3 backdrop-blur-md sm:px-6 dark:border-gray-800/80 dark:bg-gray-950/80">
@@ -24,9 +25,15 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      <span className="flex-1 truncate px-1 text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
-        {panel.name}
-      </span>
+      <div className="flex flex-1 items-center px-1">
+        {Logo ? (
+          <Logo className="h-6" />
+        ) : (
+          <span className="truncate text-[15px] font-semibold tracking-tight text-gray-900 dark:text-white">
+            {panel.name}
+          </span>
+        )}
+      </div>
 
       {showAuthenticatedControls && panel.userMenu ? <PanelUserMenu /> : null}
 

@@ -1,16 +1,15 @@
 import faroVectorSvg from '@/assets/faro-vector.svg?raw'
+import { InlineSvg } from './InlineSvg'
 
 export type FaroLogoProps = {
   className?: string
 }
 
 /**
- * Inlines `faro-vector.svg` (rather than `<img src>`) so its embedded
- * `.dark`-scoped CSS custom properties actually respond to the app's theme
- * toggle — an `<img>`-loaded SVG is an isolated document and can't see the
- * host page's `.dark` class. Renders at most once per page: the SVG's
- * internal ids aren't namespaced, so a second instance would duplicate them.
+ * The animated lighthouse illustration (no wordmark — see `FaroWordmark`
+ * for that). Renders at most once per page: the SVG's internal ids aren't
+ * namespaced, so a second instance would duplicate them.
  */
 export function FaroLogo({ className }: FaroLogoProps) {
-  return <div className={className} dangerouslySetInnerHTML={{ __html: faroVectorSvg }} />
+  return <InlineSvg svg={faroVectorSvg} className={className} />
 }

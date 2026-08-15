@@ -2,11 +2,18 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 470 120"
   role="img"
+  class="faro-wordmark-logo"
   aria-labelledby="faro-wordmark-title"
 >
   <title id="faro-wordmark-title">FARO</title>
 
   <style>
+    .faro-wordmark-logo {
+      display: block;
+      height: 100%;
+      width: auto;
+    }
+
     .faro-wordmark {
       fill: #071a2d;
       font-family: Montserrat, Poppins, Arial, sans-serif;
@@ -19,6 +26,11 @@
       .faro-wordmark {
         fill: #f5f5f4;
       }
+    }
+
+    /* El toggle de tema explícito de la app gana sobre la preferencia del SO. */
+    .dark .faro-wordmark {
+      fill: #f5f5f4;
     }
 
     .faro-accent {

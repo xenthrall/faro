@@ -89,6 +89,11 @@ export type PanelConfig = {
   /** Display name shown in the panel header. */
   name: string
   /**
+   * Rendered in the header instead of `name` when set — e.g. a logo
+   * component. Receives a `className` for sizing.
+   */
+  logo?: ComponentType<{ className?: string }>
+  /**
    * Either a manually assembled list of pages, or the result of
    * `import.meta.glob('./pages/*.tsx', { eager: true })` pointed at the
    * panel's pages directory — so pages don't need to be imported and listed
