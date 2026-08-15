@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { RefreshCw, Sparkles } from 'lucide-react'
 import type { PanelPageMeta } from '@/ui/panel'
+import { Footer } from '../components/Footer'
 
 export const meta: PanelPageMeta = {
   label: 'Curiosidades',
@@ -32,25 +33,29 @@ export default function TriviaPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Curiosidades</h1>
-      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Datos random sobre faros, porque sí.
-      </p>
+    <>
+      <div>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Curiosidades</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Datos random sobre faros, porque sí.
+        </p>
 
-      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 dark:border-gray-800 dark:bg-gray-900">
-        <Sparkles className="h-5 w-5 text-amber-500" />
-        <p className="mt-4 text-lg text-gray-800 dark:text-gray-200">{facts[index]}</p>
+        <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 dark:border-gray-800 dark:bg-gray-900">
+          <Sparkles className="h-5 w-5 text-amber-500" />
+          <p className="mt-4 text-lg text-gray-800 dark:text-gray-200">{facts[index]}</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={shuffle}
+          className="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Otro dato
+        </button>
       </div>
 
-      <button
-        type="button"
-        onClick={shuffle}
-        className="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
-      >
-        <RefreshCw className="h-4 w-4" />
-        Otro dato
-      </button>
-    </div>
+      <Footer />
+    </>
   )
 }
