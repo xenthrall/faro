@@ -1,5 +1,6 @@
 export { createPanel } from './create-panel'
+export { PanelNotFound } from './PanelNotFound'
 export { PanelProvider } from './PanelProvider'
 export type { PanelProviderProps } from './PanelProvider'
 export { usePanel } from './panel-context'
-export type { Panel, PanelConfig, PanelPageConfig } from './types'
+export type { Panel, PanelConfig, PanelPageConfig, PanelPageMeta, PanelPageModule } from './types'

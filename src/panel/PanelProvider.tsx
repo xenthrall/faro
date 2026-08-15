@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router'
 import { PanelContext } from './panel-context'
 import { PanelLayout } from './PanelLayout'
+import { PanelNotFound } from './PanelNotFound'
 import { PanelPage } from './PanelPage'
 import { relativePagePath } from './paths'
 import type { Panel } from './types'
@@ -15,6 +16,8 @@ export type PanelProviderProps = {
  * so a page can host multiple panels or mix panels with its own routes.
  */
 export function PanelProvider({ panel }: PanelProviderProps) {
+  const NotFound = panel.notFoundComponent ?? PanelNotFound
+
   return (
     <PanelContext.Provider value={panel}>
       <Routes>
@@ -27,6 +30,7 @@ export function PanelProvider({ panel }: PanelProviderProps) {
               element={<PanelPage page={page} />}
             />
           ))}
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </PanelContext.Provider>

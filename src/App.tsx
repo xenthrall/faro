@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, useLocation } from 'react-router'
-import { adminPanel } from './admin-panel'
-import { PanelProvider } from './panel'
-import { ThemeProvider } from './theme'
+import { appPanel } from '@/panels/app'
+import { PanelProvider } from '@/panel'
+import { ThemeProvider } from '@/theme'
 
 /**
  * Redirects `/` to the panel's root and otherwise mounts the panel. Kept as
@@ -13,10 +13,10 @@ function AppRoutes() {
   const location = useLocation()
 
   if (location.pathname === '/') {
-    return <Navigate to={adminPanel.path} replace />
+    return <Navigate to={appPanel.path} replace />
   }
 
-  return <PanelProvider panel={adminPanel} />
+  return <PanelProvider panel={appPanel} />
 }
 
 function App() {

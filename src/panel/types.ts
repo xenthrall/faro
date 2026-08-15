@@ -2,10 +2,32 @@ import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
 /**
- * A single page registered within a Panel.
- *
- * `path` is always relative to the Panel's own `path`. Use `/` to designate
- * the Panel's index page (e.g. the dashboard shown at the Panel's root).
+ * Metadata a page file exports (as `meta`) to configure how it plugs into
+ * its panel, when discovered from a pages directory. Everything is
+ * optional — omitted fields fall back to a convention derived from the
+ * file name.
+ */
+export type PanelPageMeta = {
+  /** Sidebar label. Defaults to a capitalized version of the file name. */
+  label?: string
+  /** Path relative to the panel. Defaults to the file name (`index` → `/`). */
+  path?: string
+  /** Icon shown next to the label in the sidebar navigation. */
+  icon?: LucideIcon
+  /** Lower numbers sort first in the sidebar. Defaults to `0`. */
+  order?: number
+}
+
+/** Shape a page file is expected to export when discovered from a directory. */
+export type PanelPageModule = {
+  default: ComponentType
+  meta?: PanelPageMeta
+}
+
+/**
+ * A single page registered within a Panel, fully resolved — `name`, `label`
+ * and `path` are always present regardless of whether the page came from a
+ * manual `pages` array or was discovered from a pages directory.
  */
 export type PanelPageConfig = {
   /** Stable identifier for the page within its panel. */
@@ -17,6 +39,8 @@ export type PanelPageConfig = {
   component: ComponentType
   /** Icon shown next to the label in the sidebar navigation. */
   icon?: LucideIcon
+  /** Lower numbers sort first in the sidebar. Defaults to `0`. */
+  order?: number
 }
 
 /** Declarative input accepted by `createPanel`. */
@@ -27,13 +51,28 @@ export type PanelConfig = {
   path: string
   /** Display name shown in the panel header. */
   name: string
-  pages: PanelPageConfig[]
+  /**
+   * Either a manually assembled list of pages, or the result of
+   * `import.meta.glob('./pages/*.tsx', { eager: true })` pointed at the
+   * panel's pages directory — so pages don't need to be imported and listed
+   * one by one. Vite requires the glob call itself to live in the panel's
+   * own file (its pattern must be a static string literal), so `createPanel`
+   * takes the already-resolved module map rather than a directory string.
+   */
+  pages: PanelPageConfig[] | Record<string, PanelPageModule>
+  /**
+   * Rendered inside the panel layout for any unmatched sub-path. Falls back
+   * to a built-in page when omitted, or to a page named `_404` discovered
+   * from the pages directory.
+   */
+  notFoundComponent?: ComponentType
 }
 
 /**
  * The resolved runtime representation of a panel, as returned by
- * `createPanel`. Kept distinct from `PanelConfig` so that future
- * normalization (e.g. resolving navigation groups, resources, plugins)
- * doesn't change the shape consumers pass in.
+ * `createPanel`. `pages` is always a sorted array here, regardless of
+ * whether the input was a manual list or discovered from a directory.
  */
-export type Panel = PanelConfig
+export type Panel = Omit<PanelConfig, 'pages'> & {
+  pages: PanelPageConfig[]
+}

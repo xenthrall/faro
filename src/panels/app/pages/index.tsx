@@ -1,5 +1,12 @@
 import { Activity, LayoutDashboard, TrendingUp, Users } from 'lucide-react'
-import { PageHeader } from '../components/PageHeader'
+import { PageHeader } from '@/components/PageHeader'
+import type { PanelPageMeta } from '@/panel'
+
+export const meta: PanelPageMeta = {
+  label: 'Dashboard',
+  icon: LayoutDashboard,
+  order: 0,
+}
 
 const stats = [
   { label: 'Usuarios activos', value: '1,204', icon: Users },
@@ -7,7 +14,7 @@ const stats = [
   { label: 'Eventos hoy', value: '312', icon: Activity },
 ]
 
-export function DashboardPage() {
+export default function DashboardPage() {
   return (
     <div>
       <PageHeader

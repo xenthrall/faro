@@ -1,18 +1,25 @@
-import { Settings } from 'lucide-react'
-import { PageHeader } from '../components/PageHeader'
+import { Users } from 'lucide-react'
+import { PageHeader } from '@/components/PageHeader'
+import type { PanelPageMeta } from '@/panel'
 
-export function SettingsPage() {
+export const meta: PanelPageMeta = {
+  label: 'Usuarios',
+  icon: Users,
+  order: 10,
+}
+
+export default function UsersPage() {
   return (
     <div>
       <PageHeader
-        icon={Settings}
-        title="Configuración"
+        icon={Users}
+        title="Usuarios"
         description="Página estática de ejemplo para validar el routing del panel."
       />
 
       <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Aquí vivirán las preferencias del panel en una futura iteración.
+          Aquí vivirá la gestión de usuarios en una futura iteración.
         </p>
       </div>
     </div>

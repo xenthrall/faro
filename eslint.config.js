@@ -19,4 +19,16 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Page files colocate a `meta` export (label, path, icon, order)
+    // alongside their default component export, discovered by
+    // `createPanel` from `import.meta.glob`.
+    files: ['src/panels/**/pages/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': [
+        'error',
+        { allowConstantExport: true, allowExportNames: ['meta'] },
+      ],
+    },
+  },
 ])
