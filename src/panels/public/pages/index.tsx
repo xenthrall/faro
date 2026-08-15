@@ -2,6 +2,7 @@ import { ArrowRight, Compass } from 'lucide-react'
 import { Link } from 'react-router'
 import { appPanel } from '@/panels/app'
 import type { PanelPageMeta } from '@/ui/panel'
+import { ExplorePages } from '../ExplorePages'
 
 export const meta: PanelPageMeta = {
   label: 'Inicio',
@@ -36,6 +37,8 @@ export default function HomePage() {
         Entrar
         <ArrowRight className="h-4 w-4" />
       </Link>
+
+      <ExplorePages />
     </div>
   )
 }

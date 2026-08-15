@@ -11,3 +11,11 @@
     display: none;
   }
 }
+
+/* Used via inline `animation` where the duration is user-controlled at
+   runtime (Tailwind's arbitrary-value utilities can't interpolate JS). */
+@keyframes spin-beam {
+  to {
+    transform: rotate(360deg);
+  }
+}

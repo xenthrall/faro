@@ -6,6 +6,7 @@ export { PanelNotFound } from './PanelNotFound'
 export { PanelProvider } from './PanelProvider'
 export type { PanelProviderProps } from './PanelProvider'
 export { usePanel } from './panel-context'
+export { resolvePagePath } from './paths'
 export type {
   Panel,
   PanelConfig,
