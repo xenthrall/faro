@@ -1,3 +1,6 @@
 export { AuthProvider } from './AuthProvider'
 export { useAuth } from './auth-context'
 export type { AuthContextValue, AuthStatus, SignInWithPasswordCredentials } from './auth-context'
+export { UserAvatar } from './UserAvatar'
+export type { UserAvatarProps } from './UserAvatar'
+export { getDisplayName, getInitials } from './user-display'

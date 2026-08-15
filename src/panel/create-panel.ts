@@ -28,6 +28,20 @@ export function createPanel(config: PanelConfig): Panel {
       }
       seen.add(page.name)
     }
+
+    // "login" and "account" are reserved page names: PanelProvider generates
+    // routes for them when requiresAuth/userMenu are enabled, and a
+    // same-named page would silently collide with that generated route.
+    if (config.requiresAuth && seen.has('login')) {
+      console.warn(
+        `[panel:${config.id}] A page named "login" collides with the auto-generated login route (requiresAuth is enabled). Rename it.`,
+      )
+    }
+    if (config.requiresAuth && config.userMenu && seen.has('account')) {
+      console.warn(
+        `[panel:${config.id}] A page named "account" collides with the auto-generated account route (userMenu is enabled). Rename it.`,
+      )
+    }
   }
 
   return { ...config, pages, notFoundComponent }

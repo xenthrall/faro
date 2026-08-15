@@ -57,7 +57,11 @@ export function PanelLayout() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-gray-50 dark:bg-gray-950">
+    // `h-dvh` (not `min-h-dvh`): the shell must be capped to the viewport,
+    // not just start there — otherwise tall page content stretches this
+    // whole container and the page scrolls as one block, dragging the
+    // sidebar along with it instead of only `<PanelContent>` scrolling.
+    <div className="flex h-dvh flex-col bg-gray-50 dark:bg-gray-950">
       <PanelHeader onMenuClick={() => setMobileNavOpen(true)} />
       <div className="flex flex-1 overflow-hidden">
         <PanelSidebar open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />

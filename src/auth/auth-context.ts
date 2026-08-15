@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { AuthError, Session, User } from '@supabase/supabase-js'
+import type { AuthError, Session, User, UserAttributes } from '@supabase/supabase-js'
 
 /**
  * `loading` until the stored session (if any) has been read once, so
@@ -20,6 +20,8 @@ export type AuthContextValue = {
     credentials: SignInWithPasswordCredentials,
   ) => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
+  /** Updates the signed-in user's email, password and/or metadata (e.g. display name). */
+  updateUser: (attributes: UserAttributes) => Promise<{ error: AuthError | null }>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

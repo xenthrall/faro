@@ -72,6 +72,13 @@ export type PanelConfig = {
    * generated at `${path}/login`. Defaults to `false`.
    */
   requiresAuth?: boolean
+  /**
+   * When `true` (and `requiresAuth` is also `true`), shows a user menu in
+   * the header with the signed-in user's avatar, a link to a self-service
+   * account page generated at `${path}/account`, and sign out. Defaults to
+   * `false`.
+   */
+  userMenu?: boolean
 }
 
 /**

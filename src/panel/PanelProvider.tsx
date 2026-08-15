@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router'
+import { PanelAccount } from './PanelAccount'
 import { PanelContext } from './panel-context'
 import { PanelLayout } from './PanelLayout'
 import { PanelLogin } from './PanelLogin'
@@ -34,6 +35,9 @@ export function PanelProvider({ panel }: PanelProviderProps) {
               element={<PanelPage page={page} />}
             />
           ))}
+          {panel.requiresAuth && panel.userMenu ? (
+            <Route path="account" element={<PanelAccount />} />
+          ) : null}
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

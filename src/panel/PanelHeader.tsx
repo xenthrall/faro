@@ -2,6 +2,7 @@ import { LogOut, Menu } from 'lucide-react'
 import { useAuth } from '@/auth'
 import { ThemeToggle } from '../theme'
 import { usePanel } from './panel-context'
+import { PanelUserMenu } from './PanelUserMenu'
 
 export type PanelHeaderProps = {
   onMenuClick: () => void
@@ -10,6 +11,7 @@ export type PanelHeaderProps = {
 export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
   const panel = usePanel()
   const auth = useAuth()
+  const showAuthenticatedControls = panel.requiresAuth && auth.status === 'authenticated'
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b border-gray-200/80 bg-white/80 px-3 backdrop-blur-md sm:px-6 dark:border-gray-800/80 dark:bg-gray-950/80">
@@ -26,7 +28,9 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
         {panel.name}
       </span>
 
-      {panel.requiresAuth && auth.status === 'authenticated' ? (
+      {showAuthenticatedControls && panel.userMenu ? <PanelUserMenu /> : null}
+
+      {showAuthenticatedControls && !panel.userMenu ? (
         <button
           type="button"
           onClick={() => void auth.signOut()}
