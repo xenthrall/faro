@@ -2,6 +2,7 @@ import { ArrowRight, Compass } from 'lucide-react'
 import { Link } from 'react-router'
 import { appPanel } from '@/panels/app'
 import type { PanelPageMeta } from '@/ui/panel'
+import { FaroLogo } from '@/ui/components/FaroLogo'
 import { ExplorePages } from '../ExplorePages'
 
 export const meta: PanelPageMeta = {
@@ -12,23 +13,13 @@ export const meta: PanelPageMeta = {
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col items-center gap-8 py-8 text-center">
-      <div className="relative flex h-64 w-64 items-center justify-center overflow-hidden rounded-full bg-gray-950 sm:h-80 sm:w-80">
-        <div className="absolute inset-0 animate-[spin_7s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,rgba(250,204,21,0.35)_10deg,transparent_24deg,transparent_360deg)]" />
-        <span className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-amber-400 shadow-[0_0_70px_22px_rgba(250,204,21,0.45)]">
-          <Compass className="h-7 w-7 text-gray-950" />
-        </span>
-      </div>
+    <div className="flex flex-col items-center gap-6 py-8 text-center">
+      <FaroLogo className="w-full max-w-[280px] sm:max-w-[340px]" />
 
-      <div>
-        <h1 className="text-3xl font-semibold text-gray-900 dark:text-white sm:text-4xl">
-          Faro
-        </h1>
-        <p className="mx-auto mt-3 max-w-md text-gray-600 dark:text-gray-400">
-          Un punto de luz para pequeñas empresas que no quieren pagar de más por su
-          infraestructura.
-        </p>
-      </div>
+      <p className="mx-auto -mt-4 max-w-md text-gray-600 dark:text-gray-400">
+        Un punto de luz para pequeñas empresas que no quieren pagar de más por su
+        infraestructura.
+      </p>
 
       <Link
         to={`${appPanel.path}/login`}

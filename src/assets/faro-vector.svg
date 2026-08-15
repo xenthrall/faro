@@ -3,6 +3,7 @@
      width="490"
      height="505"
      role="img"
+     class="faro-logo"
      aria-labelledby="faro-title faro-desc">
 
   <!-- ============================================================
@@ -93,6 +94,110 @@
     </filter>
 
   </defs>
+
+
+  <!-- ============================================================
+       ESTILO
+       Variables de color para tema claro/oscuro (con fallback a
+       prefers-color-scheme para cuando el SVG se ve suelto, fuera
+       de la app) y las animaciones del faro. Todo queda scopeado
+       bajo .faro-logo para no filtrarse a otros SVG de la página.
+       ============================================================ -->
+  <style>
+    :root {
+      --faro-word-color: #071a2d;
+      --faro-border-color: #0b1e31;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --faro-word-color: #f5f5f4;
+        --faro-border-color: rgba(255, 255, 255, .85);
+      }
+    }
+
+    /* El toggle de tema explícito de la app gana sobre la preferencia del SO. */
+    .dark {
+      --faro-word-color: #f5f5f4;
+      --faro-border-color: rgba(255, 255, 255, .85);
+    }
+
+    .faro-logo {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .faro-logo #wordmark {
+      fill: var(--faro-word-color);
+    }
+
+    .faro-logo #scene-border-circle {
+      stroke: var(--faro-border-color);
+    }
+
+    .faro-logo #light-beam {
+      transform-origin: 194px 146px;
+      animation: faro-beam-rotate 7s linear infinite;
+    }
+
+    .faro-logo #beam-glow,
+    .faro-logo #lamp {
+      animation: faro-lamp-pulse 2.4s ease-in-out infinite;
+    }
+
+    .faro-logo #wave-main {
+      animation: faro-wave-drift 4s ease-in-out infinite;
+    }
+
+    .faro-logo #wave-secondary {
+      animation: faro-wave-drift 4.6s ease-in-out infinite;
+      animation-delay: .3s;
+    }
+
+    .faro-logo #stars circle {
+      animation: faro-twinkle 3.2s ease-in-out infinite;
+    }
+
+    .faro-logo #star-01 { animation-delay: 0s; }
+    .faro-logo #star-02 { animation-delay: .5s; }
+    .faro-logo #star-03 { animation-delay: 1s; }
+    .faro-logo #star-04 { animation-delay: 1.5s; }
+    .faro-logo #star-05 { animation-delay: .8s; }
+    .faro-logo #star-06 { animation-delay: 2s; }
+    .faro-logo #star-07 { animation-delay: .3s; }
+    .faro-logo #star-gold { animation-delay: .6s; animation-duration: 2.6s; }
+
+    @keyframes faro-beam-rotate {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes faro-lamp-pulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .7; }
+    }
+
+    @keyframes faro-wave-drift {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(2px); }
+    }
+
+    @keyframes faro-twinkle {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: .3; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .faro-logo #light-beam,
+      .faro-logo #beam-glow,
+      .faro-logo #lamp,
+      .faro-logo #wave-main,
+      .faro-logo #wave-secondary,
+      .faro-logo #stars circle {
+        animation: none;
+      }
+    }
+  </style>
 
 
   <!-- ============================================================
@@ -568,7 +673,6 @@
             cy="201"
             r="165"
             fill="none"
-            stroke="#ffffff"
             stroke-width="1"/>
 
   </g>
@@ -580,7 +684,6 @@
        ============================================================ -->
   <g id="wordmark"
      data-part="wordmark"
-     fill="#071a2d"
      font-family="Montserrat, Poppins, Arial, sans-serif"
      font-size="119"
      font-weight="500"
