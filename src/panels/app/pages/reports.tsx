@@ -197,7 +197,9 @@ export default function ReportsPage() {
               cell: (row) => formatMoney(row.stock_value),
             },
           ]}
-          getRowKey={(row) => row.lot_id ?? 0}
+          // Un mismo lote aparece una vez por ubicación, así que el lote solo
+          // no identifica la fila.
+          getRowKey={(row) => `${row.lot_id}-${row.location_id}`}
           loading={expiring.initialLoading}
           error={expiring.error}
           onRetry={expiring.refetch}
