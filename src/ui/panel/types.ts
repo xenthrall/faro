@@ -16,6 +16,8 @@ export type PanelPageMeta = {
   icon?: LucideIcon
   /** Lower numbers sort first in the sidebar. Defaults to `0`. */
   order?: number
+  /** Excludes the page from the sidebar while keeping its route. Defaults to `false`. */
+  hidden?: boolean
 }
 
 /** Shape a page file is expected to export when discovered from a directory. */
@@ -27,7 +29,7 @@ export type PanelPageModule = {
 /**
  * A single page registered within a Panel, fully resolved — `name`, `label`
  * and `path` are always present regardless of whether the page came from a
- * manual `pages` array or was discovered from a pages directory.
+ * manual `pages` array, a pages directory, or a resource.
  */
 export type PanelPageConfig = {
   /** Stable identifier for the page within its panel. */
@@ -41,6 +43,41 @@ export type PanelPageConfig = {
   icon?: LucideIcon
   /** Lower numbers sort first in the sidebar. Defaults to `0`. */
   order?: number
+  /** Excludes the page from the sidebar while keeping its route. Defaults to `false`. */
+  hidden?: boolean
+}
+
+/**
+ * Declarative input accepted by `createResource`. A resource groups the
+ * pages of one domain (e.g. "Products") behind a single sidebar entry.
+ */
+export type ResourceConfig = {
+  /** Unique identifier and URL segment, e.g. `'products'` → mounted at `${panel.path}/products`. */
+  name: string
+  /** Label used for the resource's sidebar entry. */
+  label: string
+  /** Icon used for the resource's sidebar entry. */
+  icon?: LucideIcon
+  /** Lower numbers sort first in the sidebar, alongside regular pages. Defaults to `0`. */
+  order?: number
+  /**
+   * Either a manually assembled list of pages, or the result of
+   * `import.meta.glob('./pages/*.tsx', { eager: true })` pointed at the
+   * resource's pages directory — same convention as a panel's own pages.
+   * The page that resolves to `/` becomes the resource's index and is the
+   * only one that gets a sidebar entry (using the resource's own label and
+   * icon); every other page is reachable by route but hidden from the
+   * sidebar, since it's meant to be linked to from the index page.
+   */
+  pages: PanelPageConfig[] | Record<string, PanelPageModule>
+}
+
+/** The resolved runtime representation of a resource, as returned by `createResource`. */
+export type Resource = ResourceConfig
+
+/** Shape a resource's `index.ts` is expected to export when discovered from a `resources/` directory. */
+export type ResourceModule = {
+  default: Resource
 }
 
 /** Declarative input accepted by `createPanel`. */
@@ -60,6 +97,14 @@ export type PanelConfig = {
    * takes the already-resolved module map rather than a directory string.
    */
   pages: PanelPageConfig[] | Record<string, PanelPageModule>
+  /**
+   * Either a manually assembled list of resources, or the result of
+   * `import.meta.glob('./resources/<name>/index.ts', { eager: true })` pointed
+   * at the panel's resources directory. Each resource's pages are merged
+   * into the panel's page list (namespaced and path-prefixed by the
+   * resource's `name`), so they route and sort exactly like regular pages.
+   */
+  resources?: Resource[] | Record<string, ResourceModule>
   /**
    * Rendered inside the panel layout for any unmatched sub-path. Falls back
    * to a built-in page when omitted, or to a page named `_404` discovered
@@ -83,9 +128,9 @@ export type PanelConfig = {
 
 /**
  * The resolved runtime representation of a panel, as returned by
- * `createPanel`. `pages` is always a sorted array here, regardless of
- * whether the input was a manual list or discovered from a directory.
+ * `createPanel`. `pages` is always a sorted, flat array here — resource
+ * pages included — regardless of how each input was supplied.
  */
-export type Panel = Omit<PanelConfig, 'pages'> & {
+export type Panel = Omit<PanelConfig, 'pages' | 'resources'> & {
   pages: PanelPageConfig[]
 }

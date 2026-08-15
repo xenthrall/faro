@@ -1,8 +1,8 @@
 import { BrowserRouter, Navigate, useLocation } from 'react-router'
 import { AuthProvider } from '@/auth'
 import { appPanel } from '@/panels/app'
-import { PanelProvider } from '@/panel'
-import { ThemeProvider } from '@/theme'
+import { PanelProvider } from '@/ui/panel'
+import { ThemeProvider } from '@/ui/theme'
 
 /**
  * Redirects `/` to the panel's root and otherwise mounts the panel. Kept as

@@ -1,7 +1,7 @@
 import { SearchX } from 'lucide-react'
 import { Link } from 'react-router'
-import { PageHeader } from '@/components/PageHeader'
-import { usePanel } from '@/panel'
+import { PageHeader } from '@/ui/components/PageHeader'
+import { usePanel } from '@/ui/panel'
 
 export default function NotFoundPage() {
   const panel = usePanel()

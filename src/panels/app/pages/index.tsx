@@ -1,6 +1,6 @@
 import { Activity, LayoutDashboard, TrendingUp, Users } from 'lucide-react'
-import { PageHeader } from '@/components/PageHeader'
-import type { PanelPageMeta } from '@/panel'
+import { PageHeader } from '@/ui/components/PageHeader'
+import type { PanelPageMeta } from '@/ui/panel'
 
 export const meta: PanelPageMeta = {
   label: 'Dashboard',

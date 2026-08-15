@@ -1,4 +1,5 @@
 import { discoverPages } from './discover-pages'
+import { discoverResources, resolveResourcePages } from './discover-resources'
 import type { Panel, PanelConfig, PanelPageConfig } from './types'
 
 function byOrder(a: PanelPageConfig, b: PanelPageConfig): number {
@@ -12,10 +13,16 @@ function byOrder(a: PanelPageConfig, b: PanelPageConfig): number {
  */
 export function createPanel(config: PanelConfig): Panel {
   const discovered = Array.isArray(config.pages)
-    ? { pages: [...config.pages].sort(byOrder), notFoundComponent: undefined }
+    ? { pages: [...config.pages], notFoundComponent: undefined }
     : discoverPages(config.pages)
 
-  const pages = discovered.pages
+  const resourcePages = !config.resources
+    ? []
+    : Array.isArray(config.resources)
+      ? config.resources.flatMap((resource) => resolveResourcePages(resource))
+      : discoverResources(config.resources)
+
+  const pages = [...discovered.pages, ...resourcePages].sort(byOrder)
   const notFoundComponent = config.notFoundComponent ?? discovered.notFoundComponent
 
   if (import.meta.env.DEV) {
@@ -23,7 +30,7 @@ export function createPanel(config: PanelConfig): Panel {
     for (const page of pages) {
       if (seen.has(page.name)) {
         console.warn(
-          `[panel:${config.id}] Duplicate page name "${page.name}". Page names must be unique within a panel.`,
+          `[panel:${config.id}] Duplicate page name "${page.name}". Page (and resource) names must be unique within a panel.`,
         )
       }
       seen.add(page.name)
@@ -44,5 +51,6 @@ export function createPanel(config: PanelConfig): Panel {
     }
   }
 
-  return { ...config, pages, notFoundComponent }
+  const { resources: _resources, pages: _pages, ...rest } = config
+  return { ...rest, pages, notFoundComponent }
 }

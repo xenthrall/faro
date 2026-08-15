@@ -18,6 +18,14 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Allow a leading underscore to mark an intentionally-unused binding,
+      // e.g. destructuring an object just to drop some of its keys.
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
   },
   {
     // Page files colocate a `meta` export (label, path, icon, order)
