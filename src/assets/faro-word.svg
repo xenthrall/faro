@@ -22,13 +22,25 @@
       letter-spacing: 2px;
     }
 
-    @media (prefers-color-scheme: dark) {
-      .faro-wordmark {
-        fill: #f5f5f4;
-      }
-    }
+    /*
+      El tema lo decide la clase .dark del elemento raiz, y nada mas.
+      Deliberadamente NO hay un @media prefers-color-scheme aca.
 
-    /* El toggle de tema explícito de la app gana sobre la preferencia del SO. */
+      El script de index.html ya resuelve la preferencia del sistema y la
+      eleccion guardada en esa unica clase antes de que React monte. Una media
+      query en este archivo volveria a decidir por su cuenta y se contradiria
+      con esa decision: con el sistema en oscuro y el usuario en tema claro,
+      .dark esta ausente (correcto) pero la media query igual pintaba la
+      palabra de blanco, es decir blanco sobre fondo claro, ilegible.
+
+      Como el SVG se inserta en el DOM y no se carga como imagen, este selector
+      alcanza a ver la clase del ancestro. Si alguna vez se usara fuera del
+      panel, el color por defecto de arriba es el oscuro, legible sobre claro.
+
+      OJO: nada de signos de menor o mayor dentro de este comentario. El SVG se
+      parsea como contenido foraneo, donde style no es texto crudo: un menor-que
+      abre una etiqueta y parte el bloque de estilos en dos.
+    */
     .dark .faro-wordmark {
       fill: #f5f5f4;
     }
