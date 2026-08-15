@@ -22,7 +22,7 @@ const links = [
 /** Subtle footer for the public panel's pages — present on every one, but never loud. */
 export function Footer() {
   return (
-    <footer className="mt-12 flex flex-col items-center gap-3 border-t border-gray-200 py-6 text-xs text-gray-400 sm:flex-row sm:justify-between dark:border-gray-800 dark:text-gray-500">
+    <footer className="mt-12 flex flex-col items-center gap-3 py-6 text-xs text-gray-400 sm:flex-row sm:justify-between dark:border-gray-800 dark:text-gray-500">
       <p>Hecho con Faro.</p>
 
       <div className="flex items-center gap-4">
