@@ -1,7 +1,54 @@
-import type { LucideIcon } from 'lucide-react'
+import { ArrowDownRight, ArrowRight, ArrowUpRight, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 import { Spinner } from './Spinner'
+
+export type StatDelta = {
+  /** Variación porcentual. `null` cuando no hay base con la que comparar. */
+  percent: number | null
+  /** Con qué se compara, p. ej. "vs. mes anterior". */
+  label: string
+  /**
+   * Si subir es bueno. Para las compras es `'neutral'`: gastar más no es
+   * mejor ni peor por sí solo, así que la cifra se muestra sin color de estado.
+   */
+  polarity?: 'up-is-good' | 'up-is-bad' | 'neutral'
+}
+
+function DeltaBadge({ percent, label, polarity = 'up-is-good' }: StatDelta) {
+  if (percent === null) {
+    return (
+      <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">
+        Sin datos previos para comparar
+      </p>
+    )
+  }
+
+  const rounded = Math.round(percent)
+  const flat = Math.abs(rounded) < 1
+  const Icon = flat ? ArrowRight : rounded > 0 ? ArrowUpRight : ArrowDownRight
+
+  // El color es un refuerzo, no el dato: el signo y la flecha ya dicen la
+  // dirección, así que se sigue leyendo sin distinguir colores.
+  const good = polarity === 'neutral' ? null : rounded > 0 === (polarity === 'up-is-good')
+  const tone =
+    flat || good === null
+      ? 'text-gray-500 dark:text-gray-400'
+      : good
+        ? 'text-emerald-700 dark:text-emerald-400'
+        : 'text-red-600 dark:text-red-400'
+
+  return (
+    <p className={`mt-1 flex items-center gap-1 truncate text-xs ${tone}`}>
+      <Icon className="h-3 w-3 shrink-0" />
+      <span className="font-medium tabular-nums">
+        {rounded > 0 ? '+' : ''}
+        {rounded}%
+      </span>
+      <span className="truncate text-gray-500 dark:text-gray-400">{label}</span>
+    </p>
+  )
+}
 
 export type StatProps = {
   label: string
@@ -9,6 +56,8 @@ export type StatProps = {
   icon?: LucideIcon
   /** Small line under the value — a breakdown or comparison. */
   detail?: ReactNode
+  /** Variación contra el período previo. Reemplaza a `detail` cuando está presente. */
+  delta?: StatDelta
   loading?: boolean
   /** Turns the whole tile into a link to the screen that explains the number. */
   to?: string
@@ -27,6 +76,7 @@ export function Stat({
   value,
   icon: Icon,
   detail,
+  delta,
   loading = false,
   to,
   tone = 'neutral',
@@ -46,7 +96,8 @@ export function Stat({
           {value}
         </p>
       )}
-      {detail && !loading ? (
+      {!loading && delta ? <DeltaBadge {...delta} /> : null}
+      {!loading && !delta && detail ? (
         <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">{detail}</p>
       ) : null}
     </>

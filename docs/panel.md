@@ -209,7 +209,92 @@ Decisiones de producto que reflejan el modelo:
 
 ---
 
-## 6. Desarrollo
+## 6. Analítica de negocio
+
+La pantalla **Ventas y ganancia** (`/app/analytics`) responde cuánto entró,
+cuánto costó y cuánto quedó, con filtros de período y gráficos.
+
+### La ganancia se calcula contra el costo real
+
+Es el pago del modelo de capas de costo. Cuando se venden 8 llantas,
+`confirm_sale` deja en el kardex de qué lote salieron y a qué costo entró ese
+lote; la ganancia es el precio menos **ese** costo, no menos un promedio ni el
+de la última compra.
+
+```
+8 × $225.000 (precio mayorista)   = $1.800.000  ingreso
+8 × $185.000 (capa de marzo, FIFO) = $1.480.000  costo real
+                                     ─────────
+                                     $  320.000  ganancia → 17,8%
+```
+
+Todo se mide sobre el **subtotal, sin impuestos**: el IVA se recauda y se
+transfiere, no es ingreso, e incluirlo inflaría ventas y margen a la vez.
+
+### Dónde vive el cálculo
+
+En SQL (`..._analytics.sql`), no en el frontend:
+
+| Objeto | Para qué |
+|---|---|
+| `v_sales_margin` | Ingreso, costo real y ganancia de cada venta confirmada, por producto. |
+| `analytics_summary(desde, hasta)` | KPIs del período: ventas, costo, ganancia, margen, ticket, compras. |
+| `analytics_timeseries(desde, hasta, intervalo, zona)` | Serie por hora/día/semana/mes, con los intervalos vacíos incluidos. |
+| `analytics_product_breakdown(desde, hasta)` | Unidades, ingreso, ganancia y margen por producto. |
+| `analytics_location_breakdown(desde, hasta)` | Lo mismo por punto de venta. |
+
+Dos detalles que no son obvios:
+
+- **Ingreso y costo se agregan por (venta, producto) antes de cruzarse.** El
+  ingreso está en `sale_items` y el costo en `inventory_movement_items`, con
+  una línea por cada lote consumido — una línea de venta puede cruzar varias
+  capas. Ese es el único grano en el que las dos cifras son comparables.
+- **Los intervalos se cortan en la zona horaria del usuario.** `date_trunc` en
+  UTC pondría una venta de las 10 de la mañana en Bogotá en la columna del día
+  anterior, y "las ventas de hoy" dejarían de ser las de hoy.
+
+### Filtros de período
+
+`src/lib/date-ranges.ts`. Presets: hoy, ayer, últimos 7 días, este mes, mes
+pasado, últimos 90 días, este año, todo el histórico y rango personalizado.
+
+Los rangos son semiabiertos `[desde, hasta)`, así que una venta de las 23:59:59
+no cae en dos períodos. La granularidad del gráfico se elige sola según el
+largo del rango (≤2 días → hora, ≤62 → día, ≤400 → semana, más → mes).
+
+La comparación para los deltas es **calendario** en los presets de calendario:
+"este mes" se compara contra el mismo tramo del mes pasado, no contra los N días
+inmediatamente anteriores — que es lo que la etiqueta "vs. mes anterior"
+promete. Los demás presets sí usan el bloque previo de igual duración.
+
+### Gráficos
+
+En `src/ui/charts/`, en HTML y CSS plano: las formas que necesita un panel
+—columnas apiladas y barras horizontales— son porcentajes dentro de un
+contenedor, así que el layout ya las resuelve, sin librería, responsivas y con
+texto nítido.
+
+| Componente | Forma | Por qué esa |
+|---|---|---|
+| `ColumnChart` | Columnas apiladas | El alto es la venta del intervalo y los segmentos la parten en costo y ganancia: un gráfico responde "cuánto vendí" y "cuánto me quedó" a la vez. |
+| `BarList` | Barras horizontales, un solo matiz | Todas las barras miden lo mismo; lo que se compara es magnitud. Un color por producto sugeriría una identidad que no existe. |
+| `ShareBar` | Barra apilada horizontal | Parte-todo con pocas partes. Las longitudes se comparan bien; los ángulos de una dona, no. |
+
+La paleta está en `.viz` (`src/index.css`), con los dos modos **elegidos**, no
+volteados: los tonos oscuros son los mismos matices re-escalonados para la
+superficie oscura. El par pasa banda de luminosidad, piso de croma, separación
+bajo daltonismo (ΔE 24,7 claro / 26,8 oscuro) y contraste ≥ 3:1. **Si se
+cambian, hay que volver a validarlos como conjunto.**
+
+Reglas que se siguen y conviene no romper al extender:
+
+- Leyenda siempre presente con dos o más series, y el valor visible sin pasar el
+  mouse: la lectura nunca depende solo del color.
+- Separador de 2px del color de la superficie entre segmentos apilados.
+- Un solo eje. Dos medidas de escalas distintas van en dos gráficos.
+- La tabla de detalle bajo los gráficos es la vista alternativa accesible.
+
+## 7. Desarrollo
 
 ```bash
 npm run db:start     # levanta Supabase local (Docker)

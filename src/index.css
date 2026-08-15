@@ -2,6 +2,28 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Paleta de los gráficos.
+   Los dos modos están elegidos, no derivados: los tonos oscuros son los mismos
+   matices re-escalonados para la superficie oscura, no un volteo automático.
+   Ambos juegos pasan las verificaciones de banda de luminosidad, piso de croma,
+   separación bajo daltonismo (ΔE 24.7 claro / 26.8 oscuro) y contraste ≥ 3:1.
+   Si se cambian, hay que volver a validarlos como conjunto. */
+.viz {
+  --viz-1: #2a78d6; /* categórica 1 — costo */
+  --viz-2: #eb6834; /* categórica 2 — ganancia */
+  --viz-sequential: #2a78d6; /* magnitud, un solo matiz */
+  --viz-grid: #e7e5e4;
+  --viz-track: #f0efec;
+}
+
+.dark .viz {
+  --viz-1: #3987e5;
+  --viz-2: #d95926;
+  --viz-sequential: #3987e5;
+  --viz-grid: #292524;
+  --viz-track: #292524;
+}
+
 /* Keeps a container scrollable without rendering a visible scrollbar. */
 @utility scrollbar-none {
   scrollbar-width: none;

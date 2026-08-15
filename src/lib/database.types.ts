@@ -1105,6 +1105,13 @@ export type Database = {
             referencedRelation: "sales"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "v_sales_margin"
+            referencedColumns: ["sale_id"]
+          },
         ]
       }
       sales: {
@@ -1379,6 +1386,96 @@ export type Database = {
         }
         Relationships: []
       }
+      v_sales_margin: {
+        Row: {
+          category_name: string | null
+          cost: number | null
+          customer_id: number | null
+          date: string | null
+          location_id: number | null
+          product_id: number | null
+          product_name: string | null
+          profit: number | null
+          quantity: number | null
+          revenue: number | null
+          sale_id: number | null
+          sku: string | null
+          tax: number | null
+          total: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_expiring_stock"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_inventory_ledger"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_product_stock"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "v_stock_by_lot"
+            referencedColumns: ["product_id"]
+          },
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_expiring_stock"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "sales_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_inventory_ledger"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "sales_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_stock_by_lot"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
       v_stock_by_location: {
         Row: {
           location_code: string | null
@@ -1515,6 +1612,63 @@ export type Database = {
         Returns: {
           lot_id: number
           quantity: number
+        }[]
+      }
+      analytics_location_breakdown: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          cost: number
+          location_id: number
+          location_name: string
+          margin_pct: number
+          profit: number
+          revenue: number
+          sales_count: number
+        }[]
+      }
+      analytics_product_breakdown: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          category_name: string
+          cost: number
+          margin_pct: number
+          product_id: number
+          product_name: string
+          profit: number
+          revenue: number
+          sku: string
+          unit_code: string
+          units_sold: number
+        }[]
+      }
+      analytics_summary: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          average_ticket: number
+          cost: number
+          margin_pct: number
+          profit: number
+          purchases_amount: number
+          purchases_count: number
+          revenue: number
+          sales_count: number
+          units_sold: number
+        }[]
+      }
+      analytics_timeseries: {
+        Args: {
+          p_bucket?: string
+          p_from: string
+          p_timezone?: string
+          p_to: string
+        }
+        Returns: {
+          bucket: string
+          cost: number
+          profit: number
+          purchases: number
+          revenue: number
+          sales_count: number
         }[]
       }
       apply_inventory_movement: {

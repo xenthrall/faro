@@ -640,6 +640,35 @@ begin
   -- VENTAS
   -- ==========================================================================
 
+  -- --- Meses previos, desde la bodega ---------------------------------------
+  -- Sin historial anterior, la analítica no tendría contra qué comparar y todo
+  -- delta quedaría vacío. Estas dos ventas mayoristas salen de la bodega, que
+  -- es de donde se despachaba antes de que los locales tuvieran surtido.
+  insert into public.sales (customer_id, location_id, reference, date, notes)
+  values (v_cli_taller, v_bodega, 'FV-000098', '2026-06-20 11:00-05',
+          'Despacho mayorista desde bodega')
+  returning id into v_venta;
+
+  insert into public.sale_items (sale_id, product_id, quantity, unit_price, tax_rate) values
+    (v_venta, v_p_llanta_195,  4, 210000, 19),
+    (v_venta, v_p_aceite,      8,  69900, 19),
+    (v_venta, v_p_freno,       6,  24000, 19);
+
+  perform public.confirm_sale(v_venta);
+
+  insert into public.sales (customer_id, location_id, reference, date, notes)
+  values (v_cli_constructora, v_bodega, 'FV-000099', '2026-07-14 09:20-05',
+          'Obra Av. Suba — primera entrega')
+  returning id into v_venta;
+
+  insert into public.sale_items (sale_id, product_id, quantity, unit_price, tax_rate) values
+    (v_venta, v_p_cemento,  25, 31900, 19),
+    (v_venta, v_p_pintura,   8, 64900, 19),
+    (v_venta, v_p_cable,   150,  3900, 19),
+    (v_venta, v_p_tubo,     12, 19900, 19);
+
+  perform public.confirm_sale(v_venta);
+
   -- --- Venta mayorista al taller (Centro) -----------------------------------
   -- Sin lote indicado: confirm_sale reparte por FEFO. Para la llanta 205, que
   -- no vence, el desempate es FIFO y sale primero la capa de $185.000.
