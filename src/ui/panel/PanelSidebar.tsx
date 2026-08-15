@@ -31,7 +31,7 @@ export function PanelSidebar({ open, onClose }: PanelSidebarProps) {
           </span>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+        <nav className="scrollbar-none flex flex-1 flex-col gap-1 overflow-y-auto p-3">
           {panel.pages
             .filter((page) => !page.hidden)
             .map((page) => {

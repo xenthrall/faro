@@ -1,6 +1,4 @@
-import { Package } from 'lucide-react'
 import { Link } from 'react-router'
-import { PageHeader } from '@/ui/components/PageHeader'
 import { usePanel } from '@/ui/panel'
 import type { PanelPageMeta } from '@/ui/panel'
 
@@ -14,11 +12,7 @@ export default function CreateProductPage() {
 
   return (
     <div>
-      <PageHeader
-        icon={Package}
-        title="Nuevo producto"
-        description="Página estática de ejemplo para un futuro formulario de creación."
-      />
+      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Nuevo producto</h1>
 
       <div className="mt-6 flex flex-col items-center gap-4 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
         <p className="text-sm text-gray-500 dark:text-gray-400">

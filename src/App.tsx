@@ -1,23 +1,33 @@
 import { BrowserRouter, Navigate, useLocation } from 'react-router'
 import { AuthProvider } from '@/auth'
 import { appPanel } from '@/panels/app'
+import { publicPanel } from '@/panels/public'
 import { PanelProvider } from '@/ui/panel'
+import type { Panel } from '@/ui/panel'
 import { ThemeProvider } from '@/ui/theme'
 
+const panels: Panel[] = [publicPanel, appPanel]
+
+function findActivePanel(pathname: string): Panel | undefined {
+  return panels.find((panel) => pathname === panel.path || pathname.startsWith(`${panel.path}/`))
+}
+
 /**
- * Redirects `/` to the panel's root and otherwise mounts the panel. Kept as
- * a plain location check (no `<Routes>`) so the panel's own `<Routes>` is
- * the only route tree matched against the URL — an extra sibling `<Routes>`
- * here would log "No routes matched" for every path it doesn't own.
+ * Mounts whichever registered panel owns the current URL — never more than
+ * one at a time. Each panel is a self-contained `<Routes>` tree matched
+ * against the full location, so rendering two simultaneously would make the
+ * non-matching one falsely think it owns the URL too (e.g. its own 404
+ * catch-all firing for a path that actually belongs to a different panel).
  */
 function AppRoutes() {
   const location = useLocation()
+  const activePanel = findActivePanel(location.pathname)
 
-  if (location.pathname === '/') {
-    return <Navigate to={appPanel.path} replace />
+  if (!activePanel) {
+    return <Navigate to={publicPanel.path} replace />
   }
 
-  return <PanelProvider panel={appPanel} />
+  return <PanelProvider panel={activePanel} />
 }
 
 function App() {

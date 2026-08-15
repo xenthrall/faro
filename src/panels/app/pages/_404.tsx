@@ -1,6 +1,4 @@
-import { SearchX } from 'lucide-react'
 import { Link } from 'react-router'
-import { PageHeader } from '@/ui/components/PageHeader'
 import { usePanel } from '@/ui/panel'
 
 export default function NotFoundPage() {
@@ -8,11 +6,9 @@ export default function NotFoundPage() {
 
   return (
     <div>
-      <PageHeader
-        icon={SearchX}
-        title="Página no encontrada"
-        description="La ruta que buscás no existe o fue movida."
-      />
+      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+        Página no encontrada
+      </h1>
 
       <div className="mt-6 flex flex-col items-center gap-4 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
         <p className="text-sm text-gray-500 dark:text-gray-400">

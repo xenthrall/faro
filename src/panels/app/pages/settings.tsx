@@ -1,5 +1,4 @@
 import { Settings } from 'lucide-react'
-import { PageHeader } from '@/ui/components/PageHeader'
 import type { PanelPageMeta } from '@/ui/panel'
 
 export const meta: PanelPageMeta = {
@@ -11,11 +10,7 @@ export const meta: PanelPageMeta = {
 export default function SettingsPage() {
   return (
     <div>
-      <PageHeader
-        icon={Settings}
-        title="Configuración"
-        description="Página estática de ejemplo para validar el routing del panel."
-      />
+      <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Configuración</h1>
 
       <div className="mt-6 rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-700 dark:bg-gray-900">
         <p className="text-sm text-gray-500 dark:text-gray-400">
