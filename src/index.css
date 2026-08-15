@@ -19,3 +19,34 @@
     transform: rotate(360deg);
   }
 }
+
+/* Oracle character (src/panels/public/pages/oraculo.tsx): gentle idle float. */
+@keyframes oracle-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Oracle character: springy reaction burst, replayed via a `key` change on
+   every consultation so it fires even when the mood repeats. */
+@keyframes oracle-pop {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  30% {
+    transform: scale(1.18) rotate(-4deg);
+  }
+  55% {
+    transform: scale(0.94) rotate(3deg);
+  }
+  80% {
+    transform: scale(1.05) rotate(-1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
