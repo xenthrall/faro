@@ -1,0 +1,20 @@
+import { createContext, useContext } from 'react'
+
+export type Theme = 'light' | 'dark'
+
+export type ThemeContextValue = {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+  toggleTheme: () => void
+}
+
+export const ThemeContext = createContext<ThemeContextValue | null>(null)
+
+/** Returns the active theme. Must be called from within a `ThemeProvider`. */
+export function useTheme(): ThemeContextValue {
+  const ctx = useContext(ThemeContext)
+  if (!ctx) {
+    throw new Error('useTheme() must be used within a <ThemeProvider>.')
+  }
+  return ctx
+}
