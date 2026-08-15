@@ -20,7 +20,8 @@
   }
 }
 
-/* Oracle character (src/panels/public/pages/oraculo.tsx): gentle idle float. */
+/* Shared by the public panel's characters (oráculo, curiosidades): gentle
+   idle float. */
 @keyframes oracle-bob {
   0%,
   100% {
@@ -31,8 +32,8 @@
   }
 }
 
-/* Oracle character: springy reaction burst, replayed via a `key` change on
-   every consultation so it fires even when the mood repeats. */
+/* Shared springy reaction burst, replayed via a `key` change so it fires
+   again even when the triggering state repeats. */
 @keyframes oracle-pop {
   0% {
     transform: scale(1) rotate(0deg);
