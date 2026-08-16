@@ -5,15 +5,10 @@ import type { ProductOption, Reference } from '@/lib/references'
 import { supabase } from '@/lib/supabase'
 import type { StockByLot } from '@/lib/types'
 import { emptyTransferLine, type TransferLine } from './transfer-lines'
-import {
-  Button,
-  Card,
-  EmptyState,
-  IconButton,
-  Muted,
-  Section,
-  controlClassName,
-} from '@/ui/components'
+import { ProductPicker } from '../../../components/ProductPicker'
+import { Button, Card, EmptyState, IconButton, Muted, Section, controlClassName } from '@/ui/components'
+
+const fieldLabelClassName = 'mb-1 block text-[11px] font-medium text-gray-500 dark:text-gray-400'
 
 export type TransferLinesEditorProps = {
   lines: TransferLine[]
@@ -100,56 +95,59 @@ export function TransferLinesEditor({
                   className="rounded-lg border border-gray-200 p-3 dark:border-gray-800"
                 >
                   <div className="flex items-start gap-2">
-                    <span className="mt-2.5 w-5 shrink-0 text-xs text-gray-400">{index + 1}</span>
+                    <span className="mt-6 w-5 shrink-0 text-xs text-gray-400">{index + 1}</span>
 
-                    <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 lg:grid-cols-12">
-                      <select
-                        value={line.product_id}
-                        onChange={(event) =>
-                          update(line.key, { product_id: event.target.value, lot_id: '' })
-                        }
-                        aria-label={`Producto de la línea ${index + 1}`}
-                        className={`${controlClassName} col-span-2 lg:col-span-5`}
-                      >
-                        <option value="">Seleccioná un producto</option>
-                        {products.options.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="min-w-0 flex-1">
+                      <div>
+                        <span className={fieldLabelClassName}>Producto</span>
+                        <ProductPicker
+                          products={products}
+                          value={line.product_id}
+                          onChange={(productId) =>
+                            update(line.key, { product_id: productId, lot_id: '' })
+                          }
+                          ariaLabel={`Producto de la línea ${index + 1}`}
+                        />
+                      </div>
 
-                      <select
-                        value={line.lot_id}
-                        onChange={(event) => update(line.key, { lot_id: event.target.value })}
-                        aria-label={`Lote de la línea ${index + 1}`}
-                        disabled={!line.product_id}
-                        className={`${controlClassName} lg:col-span-5`}
-                      >
-                        <option value="">Automático (FEFO)</option>
-                        {lotsFor(line.product_id).map((lot) => (
-                          <option key={lot.lot_id ?? 'none'} value={lot.lot_id ?? ''}>
-                            {lot.lot_number ?? 'Sin número'} · {formatQuantity(lot.quantity)} disp. ·{' '}
-                            {formatMoneyPrecise(lot.unit_cost)}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-[1fr_140px]">
+                        <div>
+                          <span className={fieldLabelClassName}>Lote</span>
+                          <select
+                            value={line.lot_id}
+                            onChange={(event) => update(line.key, { lot_id: event.target.value })}
+                            aria-label={`Lote de la línea ${index + 1}`}
+                            disabled={!line.product_id}
+                            className={controlClassName}
+                          >
+                            <option value="">Automático (FEFO)</option>
+                            {lotsFor(line.product_id).map((lot) => (
+                              <option key={lot.lot_id ?? 'none'} value={lot.lot_id ?? ''}>
+                                {lot.lot_number ?? 'Sin número'} · {formatQuantity(lot.quantity)} disp. ·{' '}
+                                {formatMoneyPrecise(lot.unit_cost)}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                      <input
-                        type="number"
-                        step="0.0001"
-                        min="0"
-                        value={line.quantity}
-                        onChange={(event) => update(line.key, { quantity: event.target.value })}
-                        placeholder="Cantidad"
-                        aria-label={`Cantidad de la línea ${index + 1}`}
-                        className={`${controlClassName} col-span-2 lg:col-span-2`}
-                      />
+                        <div>
+                          <span className={fieldLabelClassName}>Cantidad</span>
+                          <input
+                            type="number"
+                            step="0.0001"
+                            min="0"
+                            value={line.quantity}
+                            onChange={(event) => update(line.key, { quantity: event.target.value })}
+                            aria-label={`Cantidad de la línea ${index + 1}`}
+                            className={controlClassName}
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <IconButton
                       label={`Quitar línea ${index + 1}`}
-                      className="mt-0.5"
+                      className="mt-6"
                       onClick={() => onChange(lines.filter((item) => item.key !== line.key))}
                     >
                       <Trash2 className="h-4 w-4" />

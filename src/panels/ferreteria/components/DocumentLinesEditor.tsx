@@ -1,16 +1,11 @@
-import { Plus, Trash2 } from 'lucide-react'
+import { Package, Plus, Trash2 } from 'lucide-react'
 import { formatMoney } from '@/lib/format'
 import { documentTotals, emptyLine, lineTotals, type DocumentLine } from './document-lines'
+import { ProductPicker } from './ProductPicker'
 import type { ProductOption, Reference } from '@/lib/references'
-import {
-  Button,
-  Card,
-  EmptyState,
-  IconButton,
-  Section,
-  controlClassName,
-} from '@/ui/components'
-import { Package } from 'lucide-react'
+import { Button, Card, EmptyState, IconButton, Section, controlClassName } from '@/ui/components'
+
+const fieldLabelClassName = 'mb-1 block text-[11px] font-medium text-gray-500 dark:text-gray-400'
 
 export type DocumentLinesEditorProps = {
   lines: DocumentLine[]
@@ -86,65 +81,75 @@ export function DocumentLinesEditor({
                   className="rounded-lg border border-gray-200 p-3 dark:border-gray-800"
                 >
                   <div className="flex items-start gap-2">
-                    <span className="mt-2.5 w-5 shrink-0 text-xs text-gray-400">{index + 1}</span>
+                    <span className="mt-6 w-5 shrink-0 text-xs text-gray-400">{index + 1}</span>
 
-                    <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 lg:grid-cols-12">
-                      <select
-                        value={line.product_id}
-                        onChange={(event) => pickProduct(line.key, event.target.value)}
-                        aria-label={`Producto de la línea ${index + 1}`}
-                        className={`${controlClassName} col-span-2 lg:col-span-5`}
-                      >
-                        <option value="">Seleccioná un producto</option>
-                        {products.options.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
+                    <div className="min-w-0 flex-1">
+                      <div>
+                        <span className={fieldLabelClassName}>Producto</span>
+                        <ProductPicker
+                          products={products}
+                          value={line.product_id}
+                          onChange={(productId) => pickProduct(line.key, productId)}
+                          ariaLabel={`Producto de la línea ${index + 1}`}
+                        />
+                      </div>
 
-                      <input
-                        type="number"
-                        step="0.0001"
-                        min="0"
-                        value={line.quantity}
-                        onChange={(event) => update(line.key, { quantity: event.target.value })}
-                        placeholder="Cantidad"
-                        aria-label={`Cantidad de la línea ${index + 1}`}
-                        className={`${controlClassName} lg:col-span-2`}
-                      />
+                      <div className="mt-2 grid grid-cols-2 gap-2 lg:grid-cols-[1fr_1fr_110px_140px]">
+                        <div>
+                          <span className={fieldLabelClassName}>Cantidad</span>
+                          <input
+                            type="number"
+                            step="0.0001"
+                            min="0"
+                            value={line.quantity}
+                            onChange={(event) => update(line.key, { quantity: event.target.value })}
+                            aria-label={`Cantidad de la línea ${index + 1}`}
+                            className={controlClassName}
+                          />
+                        </div>
 
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={line.price}
-                        onChange={(event) => update(line.key, { price: event.target.value })}
-                        placeholder={priceLabel}
-                        aria-label={`${priceLabel} de la línea ${index + 1}`}
-                        className={`${controlClassName} lg:col-span-2`}
-                      />
+                        <div>
+                          <span className={fieldLabelClassName}>{priceLabel}</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={line.price}
+                            onChange={(event) => update(line.key, { price: event.target.value })}
+                            aria-label={`${priceLabel} de la línea ${index + 1}`}
+                            className={controlClassName}
+                          />
+                        </div>
 
-                      <input
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        max="100"
-                        value={line.tax_rate}
-                        onChange={(event) => update(line.key, { tax_rate: event.target.value })}
-                        placeholder="Imp. %"
-                        aria-label={`Impuesto de la línea ${index + 1}`}
-                        className={`${controlClassName} lg:col-span-1`}
-                      />
+                        <div>
+                          <span className={fieldLabelClassName}>Impuesto %</span>
+                          <input
+                            type="number"
+                            step="0.001"
+                            min="0"
+                            max="100"
+                            value={line.tax_rate}
+                            onChange={(event) => update(line.key, { tax_rate: event.target.value })}
+                            placeholder="0"
+                            aria-label={`Impuesto de la línea ${index + 1}`}
+                            className={controlClassName}
+                          />
+                        </div>
 
-                      <div className="col-span-2 flex items-center justify-end pr-1 text-sm font-medium text-gray-900 lg:col-span-2 dark:text-white">
-                        {formatMoney(lineTotal.total)}
+                        <div className="flex flex-col items-end">
+                          <span className={`${fieldLabelClassName} self-start lg:self-end`}>
+                            Total línea
+                          </span>
+                          <span className="pt-2 text-sm font-semibold text-gray-900 dark:text-white">
+                            {formatMoney(lineTotal.total)}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     <IconButton
                       label={`Quitar línea ${index + 1}`}
-                      className="mt-0.5"
+                      className="mt-6"
                       onClick={() => onChange(lines.filter((item) => item.key !== line.key))}
                     >
                       <Trash2 className="h-4 w-4" />
