@@ -1787,6 +1787,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      list_panel_users: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          last_sign_in_at: string
+        }[]
+      }
       set_product_price: {
         Args: {
           p_price: number

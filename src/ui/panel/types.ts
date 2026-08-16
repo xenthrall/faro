@@ -140,6 +140,15 @@ export type PanelConfig = {
    * `false`.
    */
   userMenu?: boolean
+  /**
+   * Shows a back button in the header that navigates elsewhere — typically
+   * a business panel pointing back at the hub it was opened from. `path`
+   * starting with `/` navigates within this app; anything else (a full URL)
+   * is treated as a different domain and opened as a normal link. Omit for
+   * panels that shouldn't offer a way back (the hub itself, the public
+   * panel).
+   */
+  backTo?: { path: string; label: string }
 }
 
 /**

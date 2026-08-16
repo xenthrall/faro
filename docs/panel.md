@@ -5,6 +5,12 @@ el acceso y enlaza a los paneles de negocio — hoy solo `/negocio`, y a
 futuro otros paneles o incluso otros dominios, sin tocar el layout (ver
 `src/panels/hub/pages/index.tsx`).
 
+**Usuarios vive en el hub, no en `/negocio`.** Supabase Auth no es
+multi-tenant por panel: hay un solo `auth.users` para toda la instancia, así
+que "quién tiene acceso" es un dato del hub (lo que centraliza), no de un
+panel de negocio en particular. Si mañana hay más paneles, todos comparten
+esa misma lista de usuarios.
+
 El panel `/negocio` es la interfaz sobre el modelo descrito en
 [`database.md`](./database.md) — inventario, compras, ventas, catálogo y
 analítica. El modelo es genérico a propósito (el primer caso de uso es una
@@ -29,7 +35,7 @@ src/panels/negocio/
 ├── pages/                      páginas sueltas del panel
 │   ├── index.tsx               → /negocio          (Dashboard)
 │   ├── reports.tsx             → /negocio/reports
-│   └── users.tsx               → /negocio/users
+│   └── business.tsx            → /negocio/business
 ├── components/                 componentes compartidos entre recursos
 └── resources/
     └── <Nombre>Resource/
@@ -70,7 +76,7 @@ INVENTARIO    Existencias · Movimientos · Reportes
 DOCUMENTOS    Compras · Ventas · Transferencias
 CATÁLOGO      Productos · Categorías · Unidades · Listas de precio · Ubicaciones
 TERCEROS      Proveedores · Clientes
-SISTEMA       Perfil del negocio · Usuarios
+SISTEMA       Perfil del negocio
 ```
 
 ---
