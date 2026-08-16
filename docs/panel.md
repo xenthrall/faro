@@ -1,16 +1,20 @@
 # Faro — Panel de administración
 
 `/app` es el **hub**: una landing liviana (`src/panels/hub/`) que centraliza
-el acceso y enlaza a los paneles de negocio — hoy solo `/ferreteria`, y a
+el acceso y enlaza a los paneles de negocio — hoy solo `/negocio`, y a
 futuro otros paneles o incluso otros dominios, sin tocar el layout (ver
 `src/panels/hub/pages/index.tsx`).
 
-El panel `/ferreteria` es la interfaz sobre el modelo descrito en
-[`database.md`](./database.md) — gestión de ferretería: inventario, compras,
-ventas, catálogo y analítica. Este documento explica cómo está armado, para
-que agregar una pantalla nueva no requiera releer todo el código. Todo lo que
-sigue aplica igual a cualquier panel nuevo que se agregue junto a él (mismo
-framework, mismas convenciones), tomando `/ferreteria` como ejemplo.
+El panel `/negocio` es la interfaz sobre el modelo descrito en
+[`database.md`](./database.md) — inventario, compras, ventas, catálogo y
+analítica. El modelo es genérico a propósito (el primer caso de uso es una
+ferretería, pero nada en el esquema ni en el panel es específico de ese
+rubro — ver database.md §1), así que el nombre de la sección no habla de
+ferretería sino del negocio en general. Este documento explica cómo está
+armado, para que agregar una pantalla nueva no requiera releer todo el
+código. Todo lo que sigue aplica igual a cualquier panel nuevo que se agregue
+junto a él (mismo framework, mismas convenciones), tomando `/negocio` como
+ejemplo.
 
 ---
 
@@ -20,22 +24,22 @@ El panel ya existía como framework (inspirado en Filament): las páginas y los
 recursos se **descubren por archivo**, no se importan a mano.
 
 ```
-src/panels/ferreteria/
+src/panels/negocio/
 ├── index.ts                    createPanel + import.meta.glob
 ├── pages/                      páginas sueltas del panel
-│   ├── index.tsx               → /ferreteria          (Dashboard)
-│   ├── reports.tsx             → /ferreteria/reports
-│   └── users.tsx               → /ferreteria/users
+│   ├── index.tsx               → /negocio          (Dashboard)
+│   ├── reports.tsx             → /negocio/reports
+│   └── users.tsx               → /negocio/users
 ├── components/                 componentes compartidos entre recursos
 └── resources/
     └── <Nombre>Resource/
         ├── index.ts            createResource: name, label, icon, group, order
         ├── components/         componentes propios del recurso
         └── pages/
-            ├── index.tsx       → /ferreteria/<name>
-            ├── create.tsx      → /ferreteria/<name>/create
-            ├── detail.tsx      → /ferreteria/<name>/:id      (meta.path)
-            └── edit.tsx        → /ferreteria/<name>/:id/edit
+            ├── index.tsx       → /negocio/<name>
+            ├── create.tsx      → /negocio/<name>/create
+            ├── detail.tsx      → /negocio/<name>/:id      (meta.path)
+            └── edit.tsx        → /negocio/<name>/:id/edit
 ```
 
 Cada página exporta un componente por defecto y, opcionalmente, un `meta`:
@@ -66,7 +70,7 @@ INVENTARIO    Existencias · Movimientos · Reportes
 DOCUMENTOS    Compras · Ventas · Transferencias
 CATÁLOGO      Productos · Categorías · Unidades · Listas de precio · Ubicaciones
 TERCEROS      Proveedores · Clientes
-SISTEMA       Negocio · Usuarios
+SISTEMA       Perfil del negocio · Usuarios
 ```
 
 ---
@@ -219,7 +223,7 @@ Decisiones de producto que reflejan el modelo:
 
 ## 6. Analítica de negocio
 
-La pantalla **Ventas y ganancia** (`/ferreteria/analytics`) responde cuánto entró,
+La pantalla **Ventas y ganancia** (`/negocio/analytics`) responde cuánto entró,
 cuánto costó y cuánto quedó, con filtros de período y gráficos.
 
 ### La ganancia se calcula contra el costo real

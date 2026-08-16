@@ -18,7 +18,7 @@ import type { PanelPageMeta } from '@/ui/panel'
 import { useToast } from '@/ui/toast'
 
 export const meta: PanelPageMeta = {
-  label: 'Negocio',
+  label: 'Perfil del negocio',
   icon: Building2,
   group: 'Sistema',
   order: 40,
@@ -151,7 +151,7 @@ export default function BusinessPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Negocio"
+        title="Perfil del negocio"
         description="Datos del negocio que administrás en Faro."
       />
 

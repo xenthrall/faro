@@ -1,4 +1,4 @@
-import { ChevronRight, LayoutDashboard, Store, type LucideIcon } from 'lucide-react'
+import { Briefcase, ChevronRight, LayoutDashboard, type LucideIcon } from 'lucide-react'
 import { Link } from 'react-router'
 import { PageHeader } from '@/ui/components'
 import type { PanelPageMeta } from '@/ui/panel'
@@ -22,10 +22,10 @@ type Destination = {
 // <a> en vez de <Link> para no pasar por el router de este panel).
 const destinations: Destination[] = [
   {
-    label: 'Ferretería',
-    description: 'Inventario, compras, ventas, catálogo y analítica del negocio.',
-    icon: Store,
-    to: '/ferreteria',
+    label: 'Negocio',
+    description: 'Inventario, compras, ventas, catálogo y analítica.',
+    icon: Briefcase,
+    to: '/negocio',
   },
 ]
 

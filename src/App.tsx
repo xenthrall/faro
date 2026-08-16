@@ -1,14 +1,14 @@
 import { BrowserRouter, Navigate, useLocation } from 'react-router'
 import { AuthProvider } from '@/auth'
-import { ferreteriaPanel } from '@/panels/ferreteria'
 import { hubPanel } from '@/panels/hub'
+import { negocioPanel } from '@/panels/negocio'
 import { publicPanel } from '@/panels/public'
 import { PanelProvider } from '@/ui/panel'
 import type { Panel } from '@/ui/panel'
 import { ThemeProvider } from '@/ui/theme'
 import { ToastProvider } from '@/ui/toast'
 
-const panels: Panel[] = [publicPanel, hubPanel, ferreteriaPanel]
+const panels: Panel[] = [publicPanel, hubPanel, negocioPanel]
 
 function findActivePanel(pathname: string): Panel | undefined {
   return panels.find((panel) => pathname === panel.path || pathname.startsWith(`${panel.path}/`))
