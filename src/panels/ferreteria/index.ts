@@ -9,10 +9,10 @@ import { FaroWordmark } from '@/ui/components/FaroWordmark'
 const pages = import.meta.glob<PanelPageModule>('./pages/*.tsx', { eager: true })
 const resources = import.meta.glob<ResourceModule>('./resources/*/index.ts', { eager: true })
 
-export const appPanel = createPanel({
-  id: 'app',
-  path: '/app',
-  name: 'Faro',
+export const ferreteriaPanel = createPanel({
+  id: 'ferreteria',
+  path: '/ferreteria',
+  name: 'Faro Ferretería',
   logo: FaroWordmark,
   requiresAuth: true,
   userMenu: true,

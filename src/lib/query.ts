@@ -19,6 +19,7 @@ const listeners = new Map<string, Set<Listener>>()
 
 /** Every tag a screen can subscribe to. Typed so a typo fails to compile. */
 export type QueryTag =
+  | 'business_settings'
   | 'categories'
   | 'units'
   | 'locations'

@@ -1,6 +1,6 @@
 import { ArrowRight, Compass } from 'lucide-react'
 import { Link } from 'react-router'
-import { appPanel } from '@/panels/app'
+import { hubPanel } from '@/panels/hub'
 import type { PanelPageMeta } from '@/ui/panel'
 import { FaroLogo } from '@/ui/components/FaroLogo'
 import { FaroWordmark } from '@/ui/components/FaroWordmark'
@@ -26,7 +26,7 @@ export default function HomePage() {
         </p>
 
         <Link
-          to={`${appPanel.path}/login`}
+          to={`${hubPanel.path}/login`}
           className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
         >
           Entrar

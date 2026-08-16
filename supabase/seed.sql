@@ -809,3 +809,14 @@ begin
   raise notice 'Verificación de integridad: % discrepancias.',
     (select count(*) from public.verify_inventory_integrity());
 end $$;
+
+-- Datos del negocio de la demo. La fila ya existe (la crea la migración de
+-- business_settings), así que esto es un update, no un insert.
+update public.business_settings
+set business_name = 'Ferretería y Llantas El Yunque',
+    nit            = '901234567-8',
+    address        = 'Calle 9 # 21-16',
+    city           = 'Bogotá',
+    phone          = '(601) 222-3344',
+    email          = 'contacto@elyunque.co'
+where id = 1;

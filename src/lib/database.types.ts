@@ -34,6 +34,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_settings: {
+        Row: {
+          address: string | null
+          business_name: string
+          city: string | null
+          created_at: string
+          email: string | null
+          id: number
+          nit: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_name?: string
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: number
+          nit?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          city?: string | null
+          created_at?: string
+          email?: string | null
+          id?: number
+          nit?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           active: boolean
