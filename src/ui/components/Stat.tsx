@@ -104,7 +104,7 @@ export function Stat({
   )
 
   const className = [
-    'block rounded-xl border bg-white p-5 shadow-sm dark:bg-gray-900',
+    'block min-w-0 rounded-xl border bg-white p-5 shadow-sm dark:bg-gray-900',
     TONES[tone],
     to ? 'transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60' : '',
   ].join(' ')

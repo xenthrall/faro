@@ -12,7 +12,7 @@ export function Card({ children, className = '', flush = false }: CardProps) {
   return (
     <div
       className={[
-        'rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900',
+        'min-w-0 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900',
         flush ? '' : 'p-5',
         className,
       ].join(' ')}
@@ -32,15 +32,15 @@ export type SectionProps = {
 /** A titled block inside a page: heading row on top, content below. */
 export function Section({ title, description, actions, children }: SectionProps) {
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex min-w-0 flex-col gap-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h2>
           {description ? (
             <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{description}</p>
           ) : null}
         </div>
-        {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+        {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
       </div>
       {children}
     </section>
