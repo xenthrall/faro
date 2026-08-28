@@ -111,6 +111,7 @@ export function useCustomers() {
 export type ProductOption = {
   id: number
   sku: string
+  barcode: string | null
   name: string
   tax_rate: number
   track_lot: boolean
@@ -126,7 +127,7 @@ export function useProductOptions() {
       unwrap(
         await supabase
           .from('products')
-          .select('id, sku, name, tax_rate, track_lot, track_expiration, unit_id, units(code)')
+          .select('id, sku, barcode, name, tax_rate, track_lot, track_expiration, unit_id, units(code)')
           .eq('active', true)
           .order('name'),
       ) as ProductOption[],
