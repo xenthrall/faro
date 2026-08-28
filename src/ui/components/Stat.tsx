@@ -63,6 +63,8 @@ export type StatProps = {
   to?: string
   /** Draws attention when the number needs action (expired stock, low stock). */
   tone?: 'neutral' | 'warning' | 'danger'
+  /** `lg` for the one number a screen wants to lead with — bigger value, more breathing room. */
+  size?: 'md' | 'lg'
 }
 
 const TONES = {
@@ -80,7 +82,10 @@ export function Stat({
   loading = false,
   to,
   tone = 'neutral',
+  size = 'md',
 }: StatProps) {
+  const large = size === 'lg'
+
   const content = (
     <>
       <div className="flex items-center justify-between gap-2">
@@ -92,7 +97,9 @@ export function Stat({
           <Spinner className="h-5 w-5" />
         </div>
       ) : (
-        <p className="mt-2 truncate text-2xl font-semibold text-gray-900 dark:text-white">
+        <p
+          className={`mt-2 truncate font-semibold text-gray-900 dark:text-white ${large ? 'text-4xl' : 'text-2xl'}`}
+        >
           {value}
         </p>
       )}
@@ -104,7 +111,8 @@ export function Stat({
   )
 
   const className = [
-    'block min-w-0 rounded-xl border bg-white p-5 shadow-sm dark:bg-gray-900',
+    'block min-w-0 rounded-xl border bg-white shadow-sm dark:bg-gray-900',
+    large ? 'p-6' : 'p-5',
     TONES[tone],
     to ? 'transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60' : '',
   ].join(' ')

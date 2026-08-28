@@ -18,6 +18,23 @@ import { invalidate } from '@/lib/query'
 import { useToast } from '@/ui/toast'
 import { useState } from 'react'
 
+// Palabras de relleno sin valor distintivo, para que el código sugerido no
+// se llene de "DE", "PARA", etc.
+const SKU_STOPWORDS = new Set([
+  'DE', 'DEL', 'LA', 'EL', 'LOS', 'LAS', 'Y', 'CON', 'PARA', 'SIN', 'EN', 'UN', 'UNA',
+])
+
+/** Sugerencia de SKU a partir del nombre — un punto de partida editable, no un código definitivo. */
+function suggestSku(name: string): string {
+  const normalized = name
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9\s]/g, ' ')
+  const words = normalized.split(/\s+/).filter((word) => word && !SKU_STOPWORDS.has(word))
+  return words.slice(0, 3).join('-').slice(0, 24)
+}
+
 type ProductFormValues = FormValues & {
   category_id: string
   unit_id: string
@@ -70,9 +87,19 @@ export function ProductForm({ product, returnTo }: ProductFormProps) {
   const form = useForm<ProductFormValues>(toFormValues(product))
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Mientras el usuario no toque el SKU a mano, se recalcula solo desde el
+  // nombre — apenas lo edita una vez, dejamos de tocarlo por él.
+  const [skuEdited, setSkuEdited] = useState(product !== undefined)
 
   const isEdit = product !== undefined
   const values = form.values
+
+  function handleNameChange(value: string) {
+    form.set('name', value)
+    if (!isEdit && !skuEdited) {
+      form.set('sku', suggestSku(value))
+    }
+  }
 
   async function save() {
     setSaving(true)
@@ -149,14 +176,21 @@ export function ProductForm({ product, returnTo }: ProductFormProps) {
               required
               placeholder="Tornillo 1/4"
               className="md:col-span-2"
-              {...form.input('name')}
+              name="name"
+              value={values.name}
+              onChange={(event) => handleNameChange(event.target.value)}
             />
             <TextField
               label="SKU"
               required
-              placeholder="TOR-014"
-              hint="Único en toda la instancia."
-              {...form.input('sku')}
+              placeholder="Se completa solo al escribir el nombre"
+              hint="Código interno para identificar el producto. Se sugiere solo — podés cambiarlo."
+              name="sku"
+              value={values.sku}
+              onChange={(event) => {
+                setSkuEdited(true)
+                form.set('sku', event.target.value)
+              }}
             />
             <TextField
               label="Código de barras"
@@ -223,11 +257,6 @@ export function ProductForm({ product, returnTo }: ProductFormProps) {
               {...form.checkbox('track_expiration')}
             />
           </FieldGrid>
-
-          <p className="rounded-lg bg-gray-50 px-3 py-2.5 text-xs text-gray-500 dark:bg-gray-950 dark:text-gray-400">
-            Aunque no controles lotes, cada compra crea igual su propia capa de costo. Así conviven
-            precios de compra distintos para el mismo producto sin que uno sobrescriba al otro.
-          </p>
         </Section>
       </Card>
 

@@ -20,8 +20,8 @@ import { useToast } from '@/ui/toast'
 export const meta: PanelPageMeta = {
   label: 'Perfil del negocio',
   icon: Building2,
-  group: 'Sistema',
-  order: 40,
+  group: 'Configuración',
+  order: 37,
 }
 
 type BusinessSettings = Row<'business_settings'>

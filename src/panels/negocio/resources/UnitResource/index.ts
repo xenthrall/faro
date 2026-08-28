@@ -8,7 +8,7 @@ export default createResource({
   name: 'units',
   label: 'Unidades',
   icon: Ruler,
-  group: 'Catálogo',
+  group: 'Configuración',
   order: 32,
   pages,
 })

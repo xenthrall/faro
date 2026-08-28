@@ -149,6 +149,12 @@ export type PanelConfig = {
    * panel).
    */
   backTo?: { path: string; label: string }
+  /**
+   * Shows a help button in the header that links to learning material —
+   * typically the hub's lesson pages. Same `path` rules as `backTo`. Omit
+   * for panels with nothing to point to.
+   */
+  helpTo?: { path: string; label: string }
 }
 
 /**

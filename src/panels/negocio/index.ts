@@ -18,6 +18,7 @@ export const negocioPanel = createPanel({
   requiresAuth: true,
   userMenu: true,
   backTo: { path: hubPanel.path, label: 'Cambiar de panel' },
+  helpTo: { path: `${hubPanel.path}/aprender`, label: 'Aprender a usar el sistema' },
   pages,
   resources,
 })

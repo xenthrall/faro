@@ -1,4 +1,4 @@
-import { ArrowLeft, LogOut, Menu } from 'lucide-react'
+import { ArrowLeft, GraduationCap, LogOut, Menu } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '@/auth'
 import { ThemeToggle } from '../theme'
@@ -16,6 +16,7 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
   const showAuthenticatedControls = panel.requiresAuth && auth.status === 'authenticated'
   const Logo = panel.logo
   const backTo = panel.backTo
+  const helpTo = panel.helpTo
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-1 border-b border-gray-200/80 bg-white/80 px-3 backdrop-blur-md sm:px-6 dark:border-gray-800/80 dark:bg-gray-950/80">
@@ -55,6 +56,20 @@ export function PanelHeader({ onMenuClick }: PanelHeaderProps) {
           </span>
         )}
       </Link>
+
+      {helpTo ? (
+        <button
+          type="button"
+          onClick={() =>
+            helpTo.path.startsWith('/') ? void navigate(helpTo.path) : window.location.assign(helpTo.path)
+          }
+          aria-label={helpTo.label}
+          title={helpTo.label}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white dark:active:bg-gray-700"
+        >
+          <GraduationCap className="h-[18px] w-[18px]" />
+        </button>
+      ) : null}
 
       {showAuthenticatedControls && panel.userMenu ? <PanelUserMenu /> : null}
 

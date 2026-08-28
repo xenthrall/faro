@@ -66,7 +66,7 @@ export default function MovementsPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Movimientos"
-        description="El kardex: toda existencia se explica por estas líneas. Positivo entra, negativo sale."
+        description="Historial de entradas y salidas: toda existencia se explica por estas líneas. Positivo entra, negativo sale."
       />
 
       <DataTable

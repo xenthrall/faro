@@ -8,7 +8,7 @@ export default createResource({
   name: 'categories',
   label: 'Categorías',
   icon: FolderTree,
-  group: 'Catálogo',
+  group: 'Configuración',
   order: 31,
   pages,
 })

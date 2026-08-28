@@ -1,13 +1,8 @@
-import { CheckCircle2, Minus, Package, Plus, Search, ShieldAlert, Trash2, Zap } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { CheckCircle2, Minus, Package, Plus, ShieldAlert, Trash2, Zap } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { formatMoney } from '@/lib/format'
 import { INVENTORY_TAGS, invalidate, unwrap, useQuery } from '@/lib/query'
-import {
-  defaultLocationId,
-  useLocations,
-  useProductOptions,
-  type ProductOption,
-} from '@/lib/references'
+import { defaultLocationId, useLocations, useProductOptions, type ProductOption } from '@/lib/references'
 import { supabase } from '@/lib/supabase'
 import { toNumber } from '@/lib/use-form'
 import type { CurrentPrice, Insert, StockByLocation } from '@/lib/types'
@@ -15,20 +10,12 @@ import { Button, Card, EmptyState, IconButton, PageHeader, SelectField, controlC
 import type { PanelPageMeta } from '@/ui/panel'
 import { useToast } from '@/ui/toast'
 import { documentTotals, lineTotals, type DocumentLine } from '../components/document-lines'
+import { ProductSearchBar } from '../components/ProductSearchBar'
 
 export const meta: PanelPageMeta = {
   label: 'Venta rápida',
   icon: Zap,
-  order: -1,
-}
-
-/** All query words must appear somewhere in name, SKU or barcode — order-independent. */
-function matchesQuery(option: ProductOption, query: string): boolean {
-  const haystack = `${option.name} ${option.sku} ${option.barcode ?? ''}`.toLowerCase()
-  return query
-    .split(/\s+/)
-    .filter(Boolean)
-    .every((word) => haystack.includes(word))
+  order: -2,
 }
 
 /** Turns the raw Postgres message from `confirm_sale` into something a cashier can act on. */
@@ -51,15 +38,9 @@ export default function QuickSalePage() {
   const effectiveLocationId = locationId || defaultLocationId(locations.rows)
 
   const [cart, setCart] = useState<DocumentLine[]>([])
-  const [query, setQuery] = useState('')
-  const [open, setOpen] = useState(false)
-  const [highlighted, setHighlighted] = useState(0)
   const [cashReceived, setCashReceived] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const containerRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const prices = useQuery<CurrentPrice[]>(
     async () =>
@@ -87,29 +68,6 @@ export default function QuickSalePage() {
     [stock.data],
   )
 
-  const filtered = useMemo(() => {
-    const trimmed = query.trim().toLowerCase()
-    if (!trimmed) return []
-    return products.rows.filter((option) => matchesQuery(option, trimmed)).slice(0, 8)
-  }, [products.rows, query])
-
-  function handleQueryChange(value: string) {
-    setQuery(value)
-    setOpen(value.trim().length > 0)
-    setHighlighted(0)
-  }
-
-  useEffect(() => {
-    if (!open) return
-    function onPointerDown(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', onPointerDown)
-    return () => document.removeEventListener('mousedown', onPointerDown)
-  }, [open])
-
   function addProduct(product: ProductOption) {
     const existing = cart.find((line) => line.product_id === String(product.id))
     if (existing) {
@@ -127,11 +85,6 @@ export default function QuickSalePage() {
         },
       ])
     }
-    setQuery('')
-    setOpen(false)
-    // Deferred: focusing synchronously re-triggers onFocus before React
-    // re-renders with the cleared query, reopening the dropdown on stale text.
-    requestAnimationFrame(() => inputRef.current?.focus())
   }
 
   function updateLine(key: string, patch: Partial<DocumentLine>) {
@@ -148,28 +101,6 @@ export default function QuickSalePage() {
       removeLine(line.key)
     } else {
       updateLine(line.key, { quantity: String(next) })
-    }
-  }
-
-  function handleSearchKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      setHighlighted((index) => Math.min(index + 1, filtered.length - 1))
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      setHighlighted((index) => Math.max(index - 1, 0))
-    } else if (event.key === 'Enter') {
-      event.preventDefault()
-      // A barcode scanner types the code and sends Enter — an exact match
-      // should add instantly even if the dropdown never opened.
-      const trimmed = query.trim().toLowerCase()
-      const exactBarcode = products.rows.find(
-        (option) => option.barcode && option.barcode.toLowerCase() === trimmed,
-      )
-      const pick = exactBarcode ?? filtered[highlighted]
-      if (pick) addProduct(pick)
-    } else if (event.key === 'Escape') {
-      setOpen(false)
     }
   }
 
@@ -241,72 +172,26 @@ export default function QuickSalePage() {
         }
       />
 
-      <div ref={containerRef} className="relative">
-        <div className="flex h-14 items-center gap-3 rounded-lg border border-gray-300 bg-white px-4 transition-colors focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:focus-within:border-white dark:focus-within:ring-white">
-          <Search className="h-5 w-5 shrink-0 text-gray-400" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(event) => handleQueryChange(event.target.value)}
-            onFocus={() => setOpen(query.trim().length > 0)}
-            onKeyDown={handleSearchKeyDown}
-            placeholder="Buscar por nombre, código o escanear código de barras…"
-            aria-label="Buscar producto"
-            autoFocus
-            className="w-full min-w-0 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-600"
-          />
-        </div>
-
-        {open ? (
-          <div className="absolute top-full left-0 z-40 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
-            {filtered.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
-                Sin resultados.
-              </p>
-            ) : (
-              <ul role="listbox" className="max-h-72 overflow-y-auto p-1">
-                {filtered.map((option, index) => {
-                  const available = stockByProduct.get(option.id) ?? 0
-                  return (
-                    <li key={option.id}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={index === highlighted}
-                        onMouseEnter={() => setHighlighted(index)}
-                        onClick={() => addProduct(option)}
-                        className={`flex w-full items-center justify-between gap-3 rounded-md px-3 py-2.5 text-left text-sm transition-colors ${
-                          index === highlighted
-                            ? 'bg-gray-100 dark:bg-gray-800'
-                            : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate font-medium text-gray-900 dark:text-white">
-                            {option.name}
-                          </p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">{option.sku}</p>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-3">
-                          <span
-                            className={`text-xs ${available > 0 ? 'text-gray-500 dark:text-gray-400' : 'font-medium text-red-600 dark:text-red-400'}`}
-                          >
-                            {available > 0 ? `disp. ${available}` : 'sin stock'}
-                          </span>
-                          <span className="font-medium text-gray-900 dark:text-white">
-                            {formatMoney(priceByProduct.get(option.id) ?? 0)}
-                          </span>
-                        </div>
-                      </button>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-        ) : null}
-      </div>
+      <ProductSearchBar
+        products={products}
+        onPick={addProduct}
+        placeholder="Buscar por nombre, código o escanear código de barras…"
+        renderMeta={(option) => {
+          const available = stockByProduct.get(option.id) ?? 0
+          return (
+            <>
+              <span
+                className={`text-xs ${available > 0 ? 'text-gray-500 dark:text-gray-400' : 'font-medium text-red-600 dark:text-red-400'}`}
+              >
+                {available > 0 ? `disp. ${available}` : 'sin stock'}
+              </span>
+              <span className="font-medium text-gray-900 dark:text-white">
+                {formatMoney(priceByProduct.get(option.id) ?? 0)}
+              </span>
+            </>
+          )
+        }}
+      />
 
       {cart.length === 0 ? (
         <EmptyState

@@ -10,7 +10,7 @@ export default createResource({
   name: 'products',
   label: 'Productos',
   icon: Package,
-  group: 'Catálogo',
-  order: 30,
+  group: 'Documentos',
+  order: 19,
   pages,
 })

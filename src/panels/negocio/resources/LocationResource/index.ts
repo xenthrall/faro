@@ -8,7 +8,7 @@ export default createResource({
   name: 'locations',
   label: 'Ubicaciones',
   icon: Warehouse,
-  group: 'Catálogo',
+  group: 'Configuración',
   order: 34,
   pages,
 })

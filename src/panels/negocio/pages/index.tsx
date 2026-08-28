@@ -3,14 +3,17 @@ import {
   ArrowRightLeft,
   Boxes,
   CalendarClock,
+  Coins,
   LayoutDashboard,
   Package,
-  Plus,
   Receipt,
   ShoppingCart,
   TrendingDown,
+  TrendingUp,
+  Zap,
 } from 'lucide-react'
-import { formatDateTime, formatMoney, formatQuantity } from '@/lib/format'
+import { resolveRange } from '@/lib/date-ranges'
+import { formatDateTime, formatMoney, formatPercent, formatQuantity } from '@/lib/format'
 import { unwrap, useQuery } from '@/lib/query'
 import { supabase } from '@/lib/supabase'
 import {
@@ -35,6 +38,7 @@ import {
 } from '@/ui/components'
 import { usePanel } from '@/ui/panel'
 import type { PanelPageMeta } from '@/ui/panel'
+import { EMPTY_SUMMARY, type Summary } from '@/lib/analytics'
 
 export const meta: PanelPageMeta = {
   label: 'Dashboard',
@@ -44,6 +48,20 @@ export const meta: PanelPageMeta = {
 
 export default function DashboardPage() {
   const panel = usePanel()
+
+  const todayRange = resolveRange('today')
+  const today = useQuery<Summary>(
+    async () => {
+      const rows = unwrap(
+        await supabase.rpc('analytics_summary', {
+          p_from: todayRange.from.toISOString(),
+          p_to: todayRange.to.toISOString(),
+        }),
+      )
+      return (rows[0] as Summary) ?? EMPTY_SUMMARY
+    },
+    { tags: ['sales', 'purchases', 'inventory_movements'] },
+  )
 
   const stock = useQuery<ProductStock[]>(
     async () => unwrap(await supabase.from('v_product_stock').select('*')),
@@ -104,57 +122,102 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Dashboard"
-        description="Estado del inventario y accesos a lo que se usa todos los días."
+        description="Cómo va tu negocio y accesos a lo que usás todos los días."
         actions={
           <>
-            <ButtonLink variant="secondary" to={`${panel.path}/purchases/create`}>
+            <ButtonLink variant="secondary" to={`${panel.path}/compra-rapida`}>
               <ShoppingCart className="h-4 w-4" />
-              Compra
+              Comprar
             </ButtonLink>
-            <ButtonLink to={`${panel.path}/sales/create`}>
-              <Plus className="h-4 w-4" />
-              Venta
+            <ButtonLink to={`${panel.path}/venta-rapida`}>
+              <Zap className="h-4 w-4" />
+              Vender
             </ButtonLink>
           </>
         }
       />
 
-      <StatGrid>
+      <Section
+        title="Hoy"
+        description="Lo que vendiste, gastaste y ganaste desde la medianoche."
+        actions={
+          <ButtonLink size="sm" variant="ghost" to={`${panel.path}/analytics`}>
+            Ver el mes completo
+          </ButtonLink>
+        }
+      >
         <Stat
-          label="Valor del inventario"
-          value={formatMoney(totalValue)}
-          icon={Boxes}
-          loading={stock.initialLoading}
-          detail="valorizado al costo de cada lote"
-          to={`${panel.path}/inventory`}
+          label="Ganancia de hoy"
+          value={formatMoney(today.data?.profit ?? 0)}
+          icon={TrendingUp}
+          size="lg"
+          loading={today.initialLoading}
+          tone={(today.data?.profit ?? 0) < 0 ? 'danger' : 'neutral'}
         />
-        <Stat
-          label="Productos con stock"
-          value={`${withStock} / ${rows.length}`}
-          icon={Package}
-          loading={stock.initialLoading}
-          detail={`${rows.length} productos en el catálogo`}
-          to={`${panel.path}/products`}
-        />
-        <Stat
-          label="Bajo mínimo"
-          value={lowStock.length}
-          icon={TrendingDown}
-          loading={stock.initialLoading}
-          tone={lowStock.length > 0 ? 'warning' : 'neutral'}
-          detail={lowStock.length > 0 ? 'necesitan reposición' : 'todo por encima del mínimo'}
-          to={`${panel.path}/reports`}
-        />
-        <Stat
-          label="Lotes por vencer"
-          value={expiringRows.length}
-          icon={CalendarClock}
-          loading={expiring.initialLoading}
-          tone={expiredCount > 0 ? 'danger' : expiringRows.length > 0 ? 'warning' : 'neutral'}
-          detail={expiredCount > 0 ? `${expiredCount} ya vencido${expiredCount === 1 ? '' : 's'}` : 'próximos 30 días'}
-          to={`${panel.path}/reports`}
-        />
-      </StatGrid>
+
+        <StatGrid>
+          <Stat
+            label="Vendiste"
+            value={formatMoney(today.data?.revenue ?? 0)}
+            icon={Receipt}
+            loading={today.initialLoading}
+            detail={`${today.data?.sales_count ?? 0} venta${(today.data?.sales_count ?? 0) === 1 ? '' : 's'}`}
+          />
+          <Stat
+            label="Gastaste en compras"
+            value={formatMoney(today.data?.purchases_amount ?? 0)}
+            icon={ShoppingCart}
+            loading={today.initialLoading}
+            detail={`${today.data?.purchases_count ?? 0} compra${(today.data?.purchases_count ?? 0) === 1 ? '' : 's'}`}
+          />
+          <Stat
+            label="Margen"
+            value={today.data?.margin_pct != null ? formatPercent(today.data.margin_pct) : '—'}
+            icon={Coins}
+            loading={today.initialLoading}
+            detail="Qué parte de cada venta te queda como ganancia"
+          />
+        </StatGrid>
+      </Section>
+
+      <Section title="Tu inventario" description="Lo que tenés y lo que necesita atención.">
+        <StatGrid>
+          <Stat
+            label="Valor del inventario"
+            value={formatMoney(totalValue)}
+            icon={Boxes}
+            loading={stock.initialLoading}
+            detail="valorizado al costo de cada lote"
+            to={`${panel.path}/inventory`}
+          />
+          <Stat
+            label="Productos con stock"
+            value={`${withStock} / ${rows.length}`}
+            icon={Package}
+            loading={stock.initialLoading}
+            detail={`${rows.length} productos en el catálogo`}
+            to={`${panel.path}/products`}
+          />
+          <Stat
+            label="Bajo mínimo"
+            value={lowStock.length}
+            icon={TrendingDown}
+            loading={stock.initialLoading}
+            tone={lowStock.length > 0 ? 'warning' : 'neutral'}
+            detail={lowStock.length > 0 ? 'necesitan reposición' : 'todo por encima del mínimo'}
+            to={`${panel.path}/reports`}
+          />
+          <Stat
+            label="Lotes por vencer"
+            value={expiringRows.length}
+            icon={CalendarClock}
+            loading={expiring.initialLoading}
+            tone={expiredCount > 0 ? 'danger' : expiringRows.length > 0 ? 'warning' : 'neutral'}
+            detail={expiredCount > 0 ? `${expiredCount} ya vencido${expiredCount === 1 ? '' : 's'}` : 'próximos 30 días'}
+            to={`${panel.path}/reports`}
+          />
+        </StatGrid>
+      </Section>
 
       {pendingDrafts > 0 ? (
         <Card>
@@ -259,7 +322,7 @@ export default function DashboardPage() {
               title: 'Sin movimientos',
               description: 'Confirmá una compra para que el inventario empiece a moverse.',
               action: (
-                <ButtonLink to={`${panel.path}/purchases/create`}>Registrar compra</ButtonLink>
+                <ButtonLink to={`${panel.path}/compra-rapida`}>Registrar compra</ButtonLink>
               ),
             }}
           />

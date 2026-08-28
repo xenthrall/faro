@@ -8,7 +8,7 @@ export default createResource({
   name: 'price-lists',
   label: 'Listas de precio',
   icon: Tags,
-  group: 'Catálogo',
+  group: 'Configuración',
   order: 33,
   pages,
 })

@@ -1,4 +1,4 @@
-import { BarChart3, CalendarClock, CheckCircle2, MapPin, TrendingDown } from 'lucide-react'
+import { AlertTriangle, CalendarClock, MapPin, TrendingDown, Wallet } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
   formatDateOnly,
@@ -10,11 +10,9 @@ import { unwrap, useQuery } from '@/lib/query'
 import { supabase } from '@/lib/supabase'
 import type { ExpiringStock, ProductStock, StockByLocation } from '@/lib/types'
 import {
-  Badge,
   Card,
   DataTable,
   ExpirationBadge,
-  Mono,
   Muted,
   PageHeader,
   Primary,
@@ -27,8 +25,8 @@ import { usePanel } from '@/ui/panel'
 import type { PanelPageMeta } from '@/ui/panel'
 
 export const meta: PanelPageMeta = {
-  label: 'Reportes',
-  icon: BarChart3,
+  label: 'Alertas de inventario',
+  icon: AlertTriangle,
   group: 'Inventario',
   order: 12,
 }
@@ -62,14 +60,6 @@ export default function ReportsPage() {
     { tags: ['inventory', 'products'] },
   )
 
-  // The database's own consistency check: inventory must equal the sum of the
-  // applied ledger. Surfacing it here means the invariant is verifiable from
-  // the product, not only from psql.
-  const integrity = useQuery(
-    async () => unwrap(await supabase.rpc('verify_inventory_integrity')),
-    { tags: ['inventory', 'inventory_movements'] },
-  )
-
   const expiringRows = useMemo(() => {
     const all = expiring.data ?? []
     if (horizon === 'all') return all
@@ -100,20 +90,19 @@ export default function ReportsPage() {
     .filter((row) => (row.days_to_expiration ?? 0) < 0)
     .reduce((sum, row) => sum + (row.stock_value ?? 0), 0)
   const totalValue = locationTotals.reduce((sum, row) => sum + row.value, 0)
-  const discrepancies = integrity.data?.length ?? 0
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Reportes"
-        description="Vencimientos, valorización y control de consistencia del inventario."
+        title="Alertas de inventario"
+        description="Lo que necesita tu atención: qué está por vencer, qué se está por acabar y cuánto vale lo que tenés."
       />
 
       <StatGrid>
         <Stat
-          label="Valor total"
+          label="Valor total del inventario"
           value={formatMoney(totalValue)}
-          icon={BarChart3}
+          icon={Wallet}
           loading={byLocation.initialLoading}
         />
         <Stat
@@ -130,14 +119,6 @@ export default function ReportsPage() {
           icon={TrendingDown}
           loading={products.initialLoading}
           tone={lowStock.length > 0 ? 'warning' : 'neutral'}
-        />
-        <Stat
-          label="Consistencia"
-          value={discrepancies === 0 ? 'Correcta' : `${discrepancies} diferencias`}
-          icon={CheckCircle2}
-          loading={integrity.initialLoading}
-          tone={discrepancies === 0 ? 'neutral' : 'danger'}
-          detail="existencias vs. suma del kardex"
         />
       </StatGrid>
 
@@ -324,57 +305,6 @@ export default function ReportsPage() {
               'Ningún producto con stock mínimo configurado está por debajo del umbral.',
           }}
         />
-      </Section>
-
-      <Section
-        title="Consistencia del inventario"
-        description="Las existencias deben coincidir exactamente con la suma de los movimientos aplicados."
-      >
-        {discrepancies === 0 ? (
-          <Card>
-            <div className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  Sin diferencias
-                </p>
-                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                  Cada existencia se explica por su historial de movimientos.
-                </p>
-              </div>
-            </div>
-          </Card>
-        ) : (
-          <DataTable
-            rows={integrity.data}
-            columns={[
-              { key: 'product', header: 'Producto', cell: (row) => <Mono>#{row.product_id}</Mono> },
-              { key: 'location', header: 'Ubicación', cell: (row) => <Mono>#{row.location_id}</Mono> },
-              { key: 'lot', header: 'Lote', cell: (row) => <Mono>#{row.lot_id ?? '—'}</Mono> },
-              {
-                key: 'inventory',
-                header: 'Existencias',
-                align: 'right',
-                cell: (row) => formatQuantity(row.inventory_qty),
-              },
-              {
-                key: 'movements',
-                header: 'Kardex',
-                align: 'right',
-                cell: (row) => formatQuantity(row.movements_qty),
-              },
-              {
-                key: 'difference',
-                header: 'Diferencia',
-                align: 'right',
-                cell: (row) => <Badge tone="danger">{formatQuantity(row.difference)}</Badge>,
-              },
-            ]}
-            getRowKey={(row) => `${row.product_id}-${row.location_id}-${row.lot_id}`}
-            loading={integrity.initialLoading}
-            empty={{ title: 'Sin diferencias' }}
-          />
-        )}
       </Section>
     </div>
   )

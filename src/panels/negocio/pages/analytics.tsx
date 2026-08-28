@@ -1,11 +1,4 @@
-import {
-  Coins,
-  Package,
-  Receipt,
-  ShoppingCart,
-  TrendingUp,
-  Wallet,
-} from 'lucide-react'
+import { Coins, Receipt, ShoppingCart, TrendingUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
   bucketFor,
@@ -20,6 +13,7 @@ import {
   todayIso,
   type RangePresetId,
 } from '@/lib/date-ranges'
+import { EMPTY_SUMMARY, type Summary } from '@/lib/analytics'
 import { formatMoney, formatPercent, formatQuantity } from '@/lib/format'
 import { unwrap, useQuery } from '@/lib/query'
 import { supabase } from '@/lib/supabase'
@@ -44,18 +38,6 @@ export const meta: PanelPageMeta = {
   label: 'Ventas y ganancia',
   icon: TrendingUp,
   order: 1,
-}
-
-type Summary = {
-  revenue: number
-  cost: number
-  profit: number
-  margin_pct: number | null
-  units_sold: number
-  sales_count: number
-  average_ticket: number | null
-  purchases_amount: number
-  purchases_count: number
 }
 
 type Point = {
@@ -97,21 +79,9 @@ const MARGIN_SERIES: ChartSeries[] = [
   { key: 'profit', label: 'Ganancia', color: 'var(--viz-2)' },
 ]
 
-const EMPTY_SUMMARY: Summary = {
-  revenue: 0,
-  cost: 0,
-  profit: 0,
-  margin_pct: null,
-  units_sold: 0,
-  sales_count: 0,
-  average_ticket: null,
-  purchases_amount: 0,
-  purchases_count: 0,
-}
-
 export default function AnalyticsPage() {
   const panel = usePanel()
-  const [preset, setPreset] = useState<RangePresetId>('this_month')
+  const [preset, setPreset] = useState<RangePresetId>('today')
   const [custom, setCustom] = useState({ from: todayIso(-29), to: todayIso() })
 
   const range = useMemo(() => resolveRange(preset, custom), [preset, custom])
@@ -308,92 +278,46 @@ export default function AnalyticsPage() {
 
       {anyError ? <ErrorState message={anyError} onRetry={summary.refetch} /> : null}
 
+      <Stat
+        label="Tu ganancia"
+        value={formatMoney(data.profit)}
+        icon={TrendingUp}
+        size="lg"
+        loading={summary.initialLoading}
+        tone={data.profit < 0 ? 'danger' : 'neutral'}
+        delta={
+          showDeltas
+            ? { percent: deltaPercent(data.profit, prev.profit), label: comparisonLabel }
+            : undefined
+        }
+        detail={
+          showDeltas
+            ? undefined
+            : `Vendiste ${formatMoney(data.revenue)} y la mercancía te costó ${formatMoney(data.cost)}`
+        }
+      />
+
       <StatGrid>
         <Stat
-          label="Ventas"
+          label="Vendiste"
           value={formatMoney(data.revenue)}
           icon={Receipt}
           loading={summary.initialLoading}
-          delta={
-            showDeltas
-              ? { percent: deltaPercent(data.revenue, prev.revenue), label: comparisonLabel }
-              : undefined
-          }
-          detail={`${data.sales_count} venta${data.sales_count === 1 ? '' : 's'} confirmada${data.sales_count === 1 ? '' : 's'}`}
+          detail={`${data.sales_count} venta${data.sales_count === 1 ? '' : 's'} · ${formatQuantity(data.units_sold)} unidades`}
         />
         <Stat
-          label="Ganancia bruta"
-          value={formatMoney(data.profit)}
-          icon={TrendingUp}
+          label="Gastaste en mercancía"
+          value={formatMoney(data.purchases_amount)}
+          icon={ShoppingCart}
           loading={summary.initialLoading}
-          delta={
-            showDeltas
-              ? { percent: deltaPercent(data.profit, prev.profit), label: comparisonLabel }
-              : undefined
-          }
-          detail={`Costo de la mercancía: ${formatMoney(data.cost)}`}
+          detail={`${data.purchases_count} compra${data.purchases_count === 1 ? '' : 's'} confirmada${data.purchases_count === 1 ? '' : 's'}`}
         />
         <Stat
           label="Margen"
           value={data.margin_pct != null ? formatPercent(data.margin_pct) : '—'}
           icon={Coins}
           loading={summary.initialLoading}
-          delta={
-            showDeltas && data.margin_pct != null && prev.margin_pct != null
-              ? { percent: deltaPercent(data.margin_pct, prev.margin_pct), label: comparisonLabel }
-              : undefined
-          }
-          detail="Ganancia sobre ingreso"
-        />
-        <Stat
-          label="Gasto en compras"
-          value={formatMoney(data.purchases_amount)}
-          icon={ShoppingCart}
-          loading={summary.initialLoading}
-          delta={
-            showDeltas
-              ? {
-                  percent: deltaPercent(data.purchases_amount, prev.purchases_amount),
-                  // Comprar más no es bueno ni malo por sí solo: puede ser
-                  // reposición sana o sobrestock.
-                  polarity: 'neutral',
-                  label: comparisonLabel,
-                }
-              : undefined
-          }
-          detail={`${data.purchases_count} compra${data.purchases_count === 1 ? '' : 's'} confirmada${data.purchases_count === 1 ? '' : 's'}`}
-        />
-      </StatGrid>
-
-      <StatGrid>
-        <Stat
-          label="Unidades vendidas"
-          value={formatQuantity(data.units_sold)}
-          icon={Package}
-          loading={summary.initialLoading}
-          detail={`${(products.data ?? []).length} productos distintos`}
-        />
-        <Stat
-          label="Ticket promedio"
-          value={data.average_ticket != null ? formatMoney(data.average_ticket) : '—'}
-          icon={Wallet}
-          loading={summary.initialLoading}
-          detail="Ingreso ÷ número de ventas"
-        />
-        <Stat
-          label="Costo de la mercancía"
-          value={formatMoney(data.cost)}
-          icon={Coins}
-          loading={summary.initialLoading}
-          detail="Costo real de los lotes que salieron"
-        />
-        <Stat
-          label="Flujo del período"
-          value={formatMoney(data.revenue - data.purchases_amount)}
-          icon={Wallet}
-          loading={summary.initialLoading}
-          tone={data.revenue - data.purchases_amount < 0 ? 'warning' : 'neutral'}
-          detail="Ventas menos compras"
+          detail="Qué parte de cada venta te queda como ganancia"
         />
       </StatGrid>
 

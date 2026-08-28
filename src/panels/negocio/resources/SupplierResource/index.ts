@@ -8,7 +8,7 @@ export default createResource({
   name: 'suppliers',
   label: 'Proveedores',
   icon: Truck,
-  group: 'Terceros',
-  order: 40,
+  group: 'Configuración',
+  order: 35,
   pages,
 })

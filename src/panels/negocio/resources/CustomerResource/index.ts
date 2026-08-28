@@ -8,7 +8,7 @@ export default createResource({
   name: 'customers',
   label: 'Clientes',
   icon: Users,
-  group: 'Terceros',
-  order: 41,
+  group: 'Configuración',
+  order: 36,
   pages,
 })

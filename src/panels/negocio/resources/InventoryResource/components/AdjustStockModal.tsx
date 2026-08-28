@@ -1,3 +1,4 @@
+import { PackagePlus, PackageMinus } from 'lucide-react'
 import { useState } from 'react'
 import { formatMoneyPrecise, formatQuantity } from '@/lib/format'
 import { INVENTORY_TAGS, invalidate, unwrap, useQuery } from '@/lib/query'
@@ -8,15 +9,19 @@ import type { StockByLot } from '@/lib/types'
 import { Button, FieldGrid, Modal, SelectField, TextField, TextareaField } from '@/ui/components'
 import { useToast } from '@/ui/toast'
 
-const DIRECTION_OPTIONS = [
-  { value: 'in', label: 'Entrada (aumenta existencias)' },
-  { value: 'out', label: 'Salida (disminuye existencias)' },
-]
-
-const TYPE_OPTIONS = [
-  { value: 'adjustment', label: 'Ajuste' },
-  { value: 'initial_stock', label: 'Stock inicial' },
-  { value: 'return', label: 'Devolución' },
+const DIRECTION_CHOICES = [
+  {
+    value: 'in' as const,
+    label: 'Agregué stock',
+    hint: 'Sin factura, o encontraste mercancía de más al contar.',
+    icon: PackagePlus,
+  },
+  {
+    value: 'out' as const,
+    label: 'Se dañó, perdió o venció',
+    hint: 'Se descuenta de tus existencias.',
+    icon: PackageMinus,
+  },
 ]
 
 export type AdjustStockModalProps = {
@@ -42,7 +47,6 @@ export function AdjustStockModal({ open, onClose, productId, locationId }: Adjus
     product_id: productId ? String(productId) : '',
     location_id: locationId ? String(locationId) : '',
     direction: 'in',
-    type: 'adjustment',
     quantity: '',
     lot_id: '',
     unit_cost: '',
@@ -104,10 +108,16 @@ export function AdjustStockModal({ open, onClose, productId, locationId }: Adjus
           // The sign is what the database reads as direction; the two-field
           // split here only exists so the user never has to type a minus.
           p_quantity: isOut ? -quantity : quantity,
-          p_lot_id: toNullableNumber(values.lot_id) ?? undefined,
-          p_unit_cost: toNullableNumber(values.unit_cost) ?? undefined,
+          // Cada campo solo se muestra para una dirección — el otro nunca se
+          // manda, aunque haya quedado un valor viejo en el formulario al
+          // cambiar de "Agregué stock" a "Se dañó, perdió o venció" (o viceversa).
+          p_lot_id: isOut ? (toNullableNumber(values.lot_id) ?? undefined) : undefined,
+          p_unit_cost: isOut ? undefined : (toNullableNumber(values.unit_cost) ?? undefined),
           p_notes: values.notes.trim() || undefined,
-          p_type: values.type as 'adjustment' | 'initial_stock' | 'return',
+          // El motivo detallado (ajuste/stock inicial/devolución) es solo una
+          // etiqueta de reporte, no cambia el cálculo — no hace falta pedírselo
+          // al usuario en cada movimiento manual.
+          p_type: 'adjustment',
         }),
       )
 
@@ -117,7 +127,6 @@ export function AdjustStockModal({ open, onClose, productId, locationId }: Adjus
         product_id: '',
         location_id: '',
         direction: 'in',
-        type: 'adjustment',
         quantity: '',
         lot_id: '',
         unit_cost: '',
@@ -136,18 +145,48 @@ export function AdjustStockModal({ open, onClose, productId, locationId }: Adjus
       open={open}
       onClose={onClose}
       title="Ajustar existencias"
-      description="Registra una entrada o salida manual. Queda en el kardex como cualquier otro movimiento."
+      description="Para corregir el stock a mano, sin pasar por una compra o una venta."
       footer={
         <>
           <Button variant="secondary" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>
           <Button onClick={() => void submit()} loading={saving}>
-            Registrar movimiento
+            Registrar
           </Button>
         </>
       }
     >
+      <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {DIRECTION_CHOICES.map((choice) => {
+          const Icon = choice.icon
+          const selected = values.direction === choice.value
+          return (
+            <button
+              key={choice.value}
+              type="button"
+              onClick={() => form.set('direction', choice.value)}
+              aria-pressed={selected}
+              className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
+                selected
+                  ? 'border-gray-900 bg-gray-50 dark:border-white dark:bg-gray-800'
+                  : 'border-gray-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/60'
+              }`}
+            >
+              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-gray-500 dark:text-gray-400" />
+              <span>
+                <span className="block text-sm font-medium text-gray-900 dark:text-white">
+                  {choice.label}
+                </span>
+                <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+                  {choice.hint}
+                </span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+
       <FieldGrid>
         <SelectField
           label="Producto"
@@ -164,49 +203,39 @@ export function AdjustStockModal({ open, onClose, productId, locationId }: Adjus
           placeholder="Seleccioná una ubicación"
           {...form.input('location_id')}
         />
-        <SelectField label="Dirección" options={DIRECTION_OPTIONS} {...form.input('direction')} />
-
-        <SelectField label="Motivo" options={TYPE_OPTIONS} {...form.input('type')} />
         <TextField
           label="Cantidad"
           type="number"
           step="0.0001"
           min={0}
           required
-          hint="Siempre en positivo; la dirección define el signo."
           {...form.input('quantity')}
         />
 
-        <SelectField
-          label="Lote"
-          options={lotOptions}
-          placeholder={
-            isOut ? 'Automático (FEFO: vence primero, sale primero)' : 'Crear una capa de costo nueva'
-          }
-          hint={
-            isOut
-              ? 'Si no elegís lote, el sistema descuenta del que vence antes.'
-              : 'Elegí un lote existente para reingresar al mismo costo.'
-          }
-          className="md:col-span-2"
-          {...form.input('lot_id')}
-        />
-
-        {!isOut && !values.lot_id ? (
+        {isOut ? (
+          <SelectField
+            label="¿De qué lote sale?"
+            options={lotOptions}
+            placeholder="No lo sé — que el sistema elija"
+            hint="Si no elegís, se descuenta primero del que está más cerca de vencer."
+            className="md:col-span-2"
+            {...form.input('lot_id')}
+          />
+        ) : (
           <TextField
-            label="Costo unitario"
+            label="¿Cuánto te costó? (opcional)"
             type="number"
             step="0.01"
             min={0}
-            hint="Crea una capa de costo nueva. Si lo dejás vacío, la existencia entra sin costo conocido."
+            hint="Si no lo sabés todavía, dejalo vacío y lo completás más adelante."
             className="md:col-span-2"
             {...form.input('unit_cost')}
           />
-        ) : null}
+        )}
 
         <TextareaField
           label="Notas"
-          placeholder="Merma detectada en conteo físico"
+          placeholder="Ej: merma detectada al contar, producto vencido, etc."
           className="md:col-span-2"
           {...form.input('notes')}
         />
