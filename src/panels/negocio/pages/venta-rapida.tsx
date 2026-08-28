@@ -129,7 +129,9 @@ export default function QuickSalePage() {
     }
     setQuery('')
     setOpen(false)
-    inputRef.current?.focus()
+    // Deferred: focusing synchronously re-triggers onFocus before React
+    // re-renders with the cleared query, reopening the dropdown on stale text.
+    requestAnimationFrame(() => inputRef.current?.focus())
   }
 
   function updateLine(key: string, patch: Partial<DocumentLine>) {
@@ -240,19 +242,21 @@ export default function QuickSalePage() {
       />
 
       <div ref={containerRef} className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(event) => handleQueryChange(event.target.value)}
-          onFocus={() => setOpen(query.trim().length > 0)}
-          onKeyDown={handleSearchKeyDown}
-          placeholder="Buscar por nombre, código o escanear código de barras…"
-          aria-label="Buscar producto"
-          autoFocus
-          className={`${controlClassName} h-14 pl-12 text-base`}
-        />
+        <div className="flex h-14 items-center gap-3 rounded-lg border border-gray-300 bg-white px-4 transition-colors focus-within:border-gray-900 focus-within:ring-1 focus-within:ring-gray-900 dark:border-gray-700 dark:bg-gray-950 dark:focus-within:border-white dark:focus-within:ring-white">
+          <Search className="h-5 w-5 shrink-0 text-gray-400" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(event) => handleQueryChange(event.target.value)}
+            onFocus={() => setOpen(query.trim().length > 0)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Buscar por nombre, código o escanear código de barras…"
+            aria-label="Buscar producto"
+            autoFocus
+            className="w-full min-w-0 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-600"
+          />
+        </div>
 
         {open ? (
           <div className="absolute top-full left-0 z-40 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900">
