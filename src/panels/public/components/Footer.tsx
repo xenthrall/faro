@@ -19,7 +19,7 @@ const links = [
     ),
   },
   {
-    href: "https://hello.tequia.dev/",
+    href: "https://tequia.dev/",
     label: "Sitio personal",
     text: "Mi sitio",
     icon: <Globe className="h-[17px] w-[17px]" />,
