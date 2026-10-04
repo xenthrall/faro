@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { KeyRound, Mail, UserRound } from 'lucide-react'
-import { useAuth, UserAvatar } from '@/auth'
+import { KeyRound, Lock, Mail, UserRound } from 'lucide-react'
+import { isDemoUser, useAuth, UserAvatar } from '@/auth'
 import { usePanel } from './panel-context'
 
 const inputClassName =
@@ -319,8 +319,24 @@ function PasswordSection() {
   )
 }
 
+function DemoAccountNotice() {
+  return (
+    <SettingsSection
+      icon={Lock}
+      title="Cuenta de demostración"
+      description="Esta cuenta es pública y compartida: su nombre, email y contraseña no se pueden cambiar, para que siga funcionando para todos."
+    >
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Para probar estas opciones, instalá tu propia copia de Faro.
+      </p>
+    </SettingsSection>
+  )
+}
+
 export function PanelAccount() {
   const panel = usePanel()
+  const auth = useAuth()
+  const isDemo = isDemoUser(auth.user)
 
   return (
     <div>
@@ -334,9 +350,15 @@ export function PanelAccount() {
       </header>
 
       <div className="mt-6 flex flex-col gap-4">
-        <ProfileSection />
-        <EmailSection />
-        <PasswordSection />
+        {isDemo ? (
+          <DemoAccountNotice />
+        ) : (
+          <>
+            <ProfileSection />
+            <EmailSection />
+            <PasswordSection />
+          </>
+        )}
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, Navigate } from 'react-router'
-import { useAuth } from '@/auth'
+import { DEMO_USER, useAuth } from '@/auth'
 import { usePanel } from './panel-context'
 import { ThemeToggle } from '../theme'
 
@@ -11,8 +11,10 @@ const inputClassName =
 export function PanelLogin() {
   const panel = usePanel()
   const auth = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // Precargado con la cuenta pública de demo para que cualquiera pueda
+  // entrar a probar Faro con un clic.
+  const [email, setEmail] = useState<string>(DEMO_USER.email)
+  const [password, setPassword] = useState<string>(DEMO_USER.password)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const Logo = panel.logo
@@ -60,6 +62,14 @@ export function PanelLogin() {
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Iniciá sesión para continuar.
           </p>
+
+          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+            <p className="font-medium">Cuenta de demostración</p>
+            <p className="mt-0.5 text-amber-800 dark:text-amber-300">
+              Las credenciales ya están cargadas: tocá <span className="font-medium">Ingresar</span>.
+              Los datos son públicos y compartidos, no cargues información real.
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
             <div>

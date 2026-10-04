@@ -4,3 +4,4 @@ export type { AuthContextValue, AuthStatus, SignInWithPasswordCredentials } from
 export { UserAvatar } from './UserAvatar'
 export type { UserAvatarProps } from './UserAvatar'
 export { getDisplayName, getInitials } from './user-display'
+export { DEMO_USER, isDemoUser } from './demo-user'
