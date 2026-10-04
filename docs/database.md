@@ -571,19 +571,16 @@ parte de la API. Los triggers se disparan igual, porque PostgreSQL no verifica
 
 ## 9. Trabajar con el esquema
 
-```bash
-npx supabase start          # levanta el stack local
-npx supabase db reset       # recrea desde migraciones + seed
-npx supabase db advisors --local
-npx supabase migration new <nombre>
-npx supabase gen types typescript --local > src/lib/database.types.ts
-```
-
-Para aplicar en el proyecto hospedado:
+Los scripts operan sobre el proyecto hospedado vinculado con la CLI
+(`npx supabase link --project-ref <ref>`). Con el stack local de Docker se usan
+los mismos comandos de `npx supabase` con `--local` (o sin `--linked`).
 
 ```bash
-npx supabase link --project-ref <ref>
-npx supabase db push
+npm run db:migration <nombre>   # nueva migración
+npm run db:push                 # aplica las migraciones pendientes
+npm run db:reset                # BORRA los datos, reaplica migraciones + seeds
+npm run db:advisors             # chequeos de seguridad y rendimiento
+npm run db:types                # regenera src/lib/database.types.ts
 ```
 
 Toda la estructura vive en `supabase/migrations/`. **No hacer cambios desde el

@@ -315,8 +315,7 @@ Reglas que se siguen y conviene no romper al extender:
 ## 7. Desarrollo
 
 ```bash
-npm run db:start     # levanta Supabase local (Docker)
-npm run db:reset     # recrea el esquema + seed
+npm run db:push      # aplica migraciones pendientes al proyecto vinculado
 npm run db:types     # regenera src/lib/database.types.ts
 npm run dev
 npm run lint
@@ -329,19 +328,12 @@ con el argumento equivocado, falla en compilación y no en producción.
 
 ### A qué Supabase apunta el panel
 
-`.env.local` define `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`. Para
-trabajar contra el stack local, los valores son los que imprime
-`npx supabase status`:
-
-```
-VITE_SUPABASE_URL=http://127.0.0.1:54321
-VITE_SUPABASE_PUBLISHABLE_KEY=<PUBLISHABLE_KEY de supabase status>
-```
-
-Para trabajar contra el proyecto hospedado, primero hay que aplicarle el
-esquema:
+`.env.local` define `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`, ya
+sea de un proyecto hospedado o del stack local con Docker (ver README). Los
+scripts `db:*` operan sobre el proyecto vinculado con la CLI, que se vincula
+una sola vez:
 
 ```bash
+npx supabase login
 npx supabase link --project-ref <ref>
-npx supabase db push
 ```
